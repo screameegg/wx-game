@@ -14,15 +14,15 @@ function rivalKey(name) {
 export const lines = {
   debtor: {
     opener: '六场之内把第一笔还上。拍得聪明点。',
-    countdown1: 'TODO(debtor.countdown1)',
+    countdown1: '还剩一场。下一场就是还款日，钱备齐。',
     onTime: '这笔结了。下一期别掉以轻心。',
     shortfall: '先扣你能给的。缺口加息，收藏先押一件。',
     overdue: '再拖一期，场子就不留你了。',
-    collateral: 'TODO(debtor.collateral)',
+    collateral: '逾期记一次。这件押着，补齐再还你。',
     seize: '场子收了。金币清到 300，图鉴和主题还在——再站起来。',
-    seizeEntry: 'TODO(debtor.seizeEntry)',
-    pressure: 'TODO(debtor.pressure)',
-    redeem: 'TODO(debtor.redeem)',
+    seizeEntry: '场子留着。六场之内，第一笔重新还。',
+    pressure: '账还挂着。再逾期，就往查封走。',
+    redeem: '押的那件退你。账清了，下期照还。',
   },
   auctioneer: {
     band: {
@@ -34,17 +34,19 @@ export const lines = {
       ],
     },
     photo: {
+      hard: '摄影棚连夜装箱。镜头和灯，功能没试过。',
       openers: [
-        'TODO(auctioneer.photo.openers.0)',
-        'TODO(auctioneer.photo.openers.1)',
-        'TODO(auctioneer.photo.openers.2)',
+        '摄影棚连夜装箱。镜头和灯，功能没试过。',
+        '这箱是工作室搬迁时收的，包和支架都有磨损，镜头情况未知。',
+        '箱主说相册和布景还在。至于能不能拍、能不能亮，没人打包票。',
       ],
     },
     repair: {
+      hard: '维修铺清出来的。钟和收音机，没留维修单。',
       openers: [
-        'TODO(auctioneer.repair.openers.0)',
-        'TODO(auctioneer.repair.openers.1)',
-        'TODO(auctioneer.repair.openers.2)',
+        '维修铺清出来的。钟和收音机，没留维修单。',
+        '抽屉搬的时候没清点，工具和零件混在几个旧箱子里。',
+        '外壳都旧了。开机、走时、零件够不够，得自己判断。',
       ],
     },
   },

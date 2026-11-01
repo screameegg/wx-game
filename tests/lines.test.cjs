@@ -33,8 +33,17 @@ test('frozen lines and stub keys stay out of the widgets', async () => {
   assert.equal(lines.debtor.seize, '场子收了。金币清到 300，图鉴和主题还在——再站起来。');
   assert.equal(lines.auctioneer.band.hard, '巡演收摊的货，路上淋过雨——纸和琴，自己看。');
   assert.equal(lines.auctioneer.band.openers.length >= 3, true);
+  assert.equal(lines.debtor.countdown1, '还剩一场。下一场就是还款日，钱备齐。');
+  assert.equal(lines.debtor.collateral, '逾期记一次。这件押着，补齐再还你。');
+  assert.equal(lines.debtor.seizeEntry, '场子留着。六场之内，第一笔重新还。');
+  assert.equal(lines.debtor.pressure, '账还挂着。再逾期，就往查封走。');
+  assert.equal(lines.debtor.redeem, '押的那件退你。账清了，下期照还。');
   assert.equal(lines.auctioneer.photo.openers.length >= 3, true);
   assert.equal(lines.auctioneer.repair.openers.length >= 3, true);
+  assert.equal(lines.auctioneer.photo.hard, lines.auctioneer.photo.openers[0]);
+  assert.equal(lines.auctioneer.repair.hard, lines.auctioneer.repair.openers[0]);
+  assert.equal(lines.auctioneer.photo.openers.every((line) => line && !line.startsWith('TODO')), true);
+  assert.equal(lines.auctioneer.repair.openers.every((line) => line && !line.startsWith('TODO')), true);
   assert.equal(lines.judge.big_win.laozhou, '看走眼了。');
   assert.equal(lines.judge.big_win.alan, '……哼。');
   assert.equal(lines.judge.small_win.laozhou, '还行。');
@@ -44,12 +53,14 @@ test('frozen lines and stub keys stay out of the widgets', async () => {
   assert.equal(lines.judge.big_loss.laozhou, '啧……');
   assert.equal(lines.judge.big_loss.alan, '笑死。');
   assert.equal(lines.judge.pass.other, '随便。');
-  assert.equal(debtorLine('countdown1'), '');
-  assert.equal(debtorLine('collateral'), '');
-  assert.equal(debtorLine('seizeEntry'), '');
+  assert.equal(debtorLine('countdown1'), lines.debtor.countdown1);
+  assert.equal(debtorLine('collateral'), lines.debtor.collateral);
+  assert.equal(debtorLine('seizeEntry'), lines.debtor.seizeEntry);
+  assert.equal(debtorLine('pressure'), lines.debtor.pressure);
+  assert.equal(debtorLine('redeem'), lines.debtor.redeem);
   assert.equal(auctioneerLineFor({ theme: 'band' }), lines.auctioneer.band.hard);
-  assert.equal(auctioneerLineFor({ theme: 'photo' }), '');
-  assert.equal(auctioneerLineFor({ theme: 'repair' }), '');
+  assert.equal(auctioneerLineFor({ theme: 'photo' }), lines.auctioneer.photo.hard);
+  assert.equal(auctioneerLineFor({ theme: 'repair' }), lines.auctioneer.repair.hard);
   assert.equal(roiBand(1.5), 'big_win');
   assert.equal(roiBand(1.49), 'small_win');
   assert.equal(roiBand(1), 'small_win');
@@ -111,7 +122,14 @@ test('triggers show copy and leave debt numbers alone', async () => {
   assert.equal(paid.overdue, 0);
   assert.equal(paid.pledged, null);
   assert.equal(paid.collection.includes('旧吉他'), true);
-  assert.equal(paid.creditorLine, lines.debtor.onTime);
+  assert.equal(paid.creditorLine, lines.debtor.redeem);
+
+  const paidPlain = blankDebt({ round: 6, coins: 1000 });
+  resolveRepayment(paidPlain);
+  assert.equal(paidPlain.coins, 650);
+  assert.equal(paidPlain.arrears, 0);
+  assert.equal(paidPlain.pledged, null);
+  assert.equal(paidPlain.creditorLine, lines.debtor.onTime);
 
   const short = blankDebt({ round: 6, coins: 100, collection: ['旧吉他'] });
   resolveRepayment(short);
@@ -119,8 +137,16 @@ test('triggers show copy and leave debt numbers alone', async () => {
   assert.equal(short.arrears, 275);
   assert.equal(short.overdue, 1);
   assert.equal(short.pledged.name, '旧吉他');
-  assert.equal(short.creditorLine, lines.debtor.shortfall);
+  assert.equal(short.creditorLine, lines.debtor.collateral);
   assert.equal(short.notice.includes('275'), true);
+
+  const shortBare = blankDebt({ round: 6, coins: 100 });
+  resolveRepayment(shortBare);
+  assert.equal(shortBare.coins, 0);
+  assert.equal(shortBare.arrears, 275);
+  assert.equal(shortBare.overdue, 1);
+  assert.equal(shortBare.pledged, null);
+  assert.equal(shortBare.creditorLine, lines.debtor.shortfall);
 
   const warn = blankDebt({ round: 12, debtPeriod: 1, tierPeriod: 1, overdue: 1, arrears: 275, coins: 0 });
   const warnDue = paymentDue(warn);
@@ -141,15 +167,54 @@ test('triggers show copy and leave debt numbers alone', async () => {
   assert.equal(seized.creditorLine, lines.debtor.seize);
   assert.equal(seized.notice.includes('300'), true);
 
+  seized.phase = 'repayment';
+  const repayGame = new Game();
+  repayGame.state = seized;
   const repayView = new CanvasView({ width: 375, height: 700, top: 0, bottom: 0, context: fakeCtx() });
-  repayView.game = { state: seized, continueAfterRepayment() { seized.phase = 'briefing'; seized.creditorKey = 'seizeEntry'; seized.creditorLine = ''; } };
+  repayView.game = repayGame;
   const repayCtx = fakeCtx();
   repayment(repayView, repayCtx);
   assert.equal(repayCtx.texts.join('').includes(lines.debtor.seize), true);
+  assert.equal(repayCtx.texts.some((text) => text.includes('…')), false);
   assert.equal(repayView.buttons.some((button) => button.label === '继续经营'), true);
   repayView.buttons.find((button) => button.label === '继续经营').action();
   assert.equal(seized.phase, 'briefing');
-  assert.equal(seized.creditorLine, '');
+  assert.equal(seized.creditorKey, 'seizeEntry');
+  assert.equal(seized.creditorLine, lines.debtor.seizeEntry);
+
+  const dueSoon = new Game();
+  dueSoon.reset();
+  dueSoon.state.round = 5;
+  dueSoon.state.phase = 'settlement';
+  dueSoon.state.arrears = 0;
+  dueSoon.prepareRound();
+  assert.equal(dueSoon.state.phase, 'briefing');
+  assert.equal(dueSoon.state.creditorLine, lines.debtor.countdown1);
+  const dueView = new CanvasView({ width: 375, height: 700, top: 0, bottom: 0, context: fakeCtx() });
+  dueView.game = dueSoon;
+  dueView.art = { get() { return null; } };
+  const dueCtx = fakeCtx();
+  briefing(dueView, dueCtx);
+  assert.equal(dueCtx.texts.join('').includes(lines.debtor.countdown1), true);
+  assert.equal(dueCtx.texts.some((text) => text.includes('…')), false);
+
+  const pressed = new Game();
+  pressed.reset();
+  pressed.state.round = 4;
+  pressed.state.phase = 'settlement';
+  pressed.state.arrears = 100;
+  pressed.prepareRound();
+  assert.equal(pressed.state.phase, 'briefing');
+  assert.equal(pressed.state.creditorLine, lines.debtor.pressure);
+  assert.equal(pressed.state.arrears, 100);
+  assert.equal(pressed.state.coins, economy.startingCoins);
+  const pressView = new CanvasView({ width: 375, height: 700, top: 0, bottom: 0, context: fakeCtx() });
+  pressView.game = pressed;
+  pressView.art = { get() { return null; } };
+  const pressCtx = fakeCtx();
+  briefing(pressView, pressCtx);
+  assert.equal(pressCtx.texts.join('').includes(lines.debtor.pressure), true);
+  assert.equal(pressCtx.texts.some((text) => text.includes('…')), false);
 
   game.state.income = 120;
   game.state.spent = 100;
