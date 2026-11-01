@@ -1,3 +1,5 @@
+import { bidIncrement, lotValueMultiplier, openingBid } from '../data/economy';
+
 function pickPreset(lot) {
   let roll = Math.random() * 100; let index = 0;
   while (index < lot.weights.length - 1 && roll >= lot.weights[index]) { roll -= lot.weights[index]; index++; }
@@ -33,7 +35,7 @@ function pickBonus(lot, multiplier) {
 }
 // 内容与对手只在开场生成，估值不读取抽到的真实结果。
 export function createRound(lot, tier) {
-  const preset = pickPreset(lot); const multiplier = tier === 'advanced' ? 3 : 1;
+  const preset = pickPreset(lot); const multiplier = lotValueMultiplier(tier);
   const auctioneerLines = lot.auctioneerLines || [lot.story];
   const auctioneerLine = auctioneerLines[Math.floor(Math.random() * auctioneerLines.length)];
   // 首版只有门缝、半开和全开。
@@ -70,8 +72,8 @@ export function createRound(lot, tier) {
   const rivals = ['老周', '阿岚'].map((name, i) => createRival(name, i, lot, fairValue, opening, multiplier));
   return {
     preset, opening, items, bonusItem, fairValue, rivals, toolsUsed: [], auctioneerLine,
-    bidStep: 20 * multiplier, pending: false, rivalIndex: 0, ceiling: 0, warnedPrice: 0,
-    price: 100 * multiplier, leader: '拍卖员', spent: 0, income: 0,
+    bidStep: bidIncrement(tier), pending: false, rivalIndex: 0, ceiling: 0, warnedPrice: 0,
+    price: openingBid(tier), leader: '拍卖员', spent: 0, income: 0,
     collectedValue: 0, selected: -1, notice: '', phase: 'observe',
     // 特殊剧情标记（开拍前固定）
     bluffRevealed: false, // S03 阿岚装腔是否被拆穿过

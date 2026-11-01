@@ -1,6 +1,7 @@
 import { steps, heading } from '../shared/chrome';
 import { drawCargo } from '../../render/cargo';
 import { palette, panel } from '../../render/ui';
+import { economy } from '../../data/economy';
 export function observe(scene, ctx) {
   const reviewing = scene.reviewing; steps(scene, ctx, 0);
 
@@ -44,7 +45,7 @@ function drawToolCard(scene, ctx, name, x, width) {
   }
   ctx.restore();
   scene.text(ctx, name, x + 42, y + 18, 12, palette.text);
-  const price = name === '手电' ? 150 : 250;
+  const price = economy.toolCost[name];
   let note = !owned ? `购买 · ${price} 金币` : s.toolsUsed.includes(name) ? '本场已用完' : '先选货物';
   if (owned && !s.toolsUsed.includes(name) && entry) {
     if (entry.coverCloth) note = '帆布遮挡';

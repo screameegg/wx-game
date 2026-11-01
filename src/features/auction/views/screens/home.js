@@ -1,5 +1,6 @@
 import { cover, palette, panel } from '../../render/ui';
 import { catalogSprite } from '../../render/sprites';
+import { economy } from '../../data/economy';
 import { paymentDue } from '../../rules/debt';
 
 export function home(scene, ctx) {
@@ -11,7 +12,7 @@ export function home(scene, ctx) {
   catalogSprite(scene, ctx, '旧唱片', { x: 244, y: 230, w: 81, h: 86 });
   ['看线索', '参加竞价', '公布结果'].forEach((label,i) => scene.text(ctx, label, 26 + i * 116, 379, 16, palette.gold));
   scene.paragraph(ctx, '用线索判断值不值得买。卖出的金币，减去拍下的价格，就是这箱赚的钱。', 24, 422, 327, 16, 3);
-  const due = paymentDue(s); const goal = !s.unlocked.includes('photo') ? `解锁摄影箱：${Math.min(s.coins,750)} / 750 金币` : !s.unlocked.includes('repair') ? `解锁维修箱：${Math.min(s.coins,900)} / 900 金币` : s.tier === 'starter' ? `进阶档：${Math.min(s.coins,2000)} / 2000 金币` : `本期还款：${due} 金币`;
+  const due = paymentDue(s); const photo = economy.themeUnlock.photo; const repair = economy.themeUnlock.repair; const entry = economy.advancedEntryCoins; const goal = !s.unlocked.includes('photo') ? `解锁摄影箱：${Math.min(s.coins, photo)} / ${photo} 金币` : !s.unlocked.includes('repair') ? `解锁维修箱：${Math.min(s.coins, repair)} / ${repair} 金币` : s.tier === 'starter' ? `进阶档：${Math.min(s.coins, entry)} / ${entry} 金币` : `本期还款：${due} 金币`;
   panel(ctx, 24, 476, 327, 48, '#eee4d1', 11);
   scene.text(ctx, '经营目标', 34, 496, 11, palette.muted);
   scene.text(ctx, goal, 118, 506, 14, palette.text);
