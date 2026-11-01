@@ -68,3 +68,11 @@ Auction-beat reference boards. Timings live in `src/features/auction/data/round5
 - `assets/art/falcon-art-round5/leader_highlight.png` — crown study. In game the crown stays off (`showCrown: false`); the screen uses a soft glow plus the 「领先」 label.
 - `assets/art/falcon-art-round5/pass_wave_frames.png` — abandon wave, three frames, held 1–2s. Crops: `expressionBeat.waveCrops`.
 - `assets/art/falcon-art-round5/gavel_pause_compare.png` — pre-hammer pause versus after the strike. Reference only; the 0.4–0.6s hold is drawn in code (scale + vignette) and does not show item grades.
+
+# Falcon art round 6
+
+Reveal-feel reference boards. Timings and hit zones live in `src/features/auction/data/round6.js`. These sheets include captions, so the live screen is drawn from the beat data (`useSheet: false`). None of these pixels enter bids, sale prices, or the collection ledger.
+
+- `assets/art/falcon-art-round6/reveal_flip_frames.png` — tap-to-enlarge, flip, then the readable front. Queue scale rests at 1.15–1.25; the next item takes 300–500ms.
+- `assets/art/falcon-art-round6/sell_collect_layout.png` — primary 「卖掉」versus secondary 「收下」, wide gap, separate icon and color.
+- `assets/art/falcon-art-round6/rare_sparkle_frame.png` — one rare highlight frame. In game it lasts at most 300ms and does not loop. Normal items draw none.
