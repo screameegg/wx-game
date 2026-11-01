@@ -1,4 +1,5 @@
 import { palette, divider, panel } from '../../render/ui';
+import { economy } from '../../data/economy';
 import { paymentDue } from '../../rules/debt';
 
 export function header(scene, ctx) {
@@ -6,7 +7,7 @@ export function header(scene, ctx) {
   scene.text(ctx, `${scene.game.state.coins} 金币`, 222, 32, 14, palette.gold);
   const s = scene.game.state; const due = paymentDue(s);
   const completed = ['observe', 'auction', 'reveal'].includes(s.phase) ? Math.max(0, s.round - 1) : s.round;
-  const remaining = completed > 0 && completed % 6 === 0 && s.debtPeriod < completed / 6 ? 0 : 6 - completed % 6;
+  const cycle = economy.repaymentCycleRounds; const remaining = completed > 0 && completed % cycle === 0 && s.debtPeriod < completed / cycle ? 0 : cycle - completed % cycle;
   scene.text(ctx, `应还 ${due} · 剩 ${remaining} 场`, 22, 55, 11, palette.muted);
   scene.button(ctx, scene.menu.view ? '首页' : '菜单', 318, 11, 43, 30, () => { scene.game.save(); scene.menu.view = scene.menu.view ? 'home' : 'pause'; }, true);
 }

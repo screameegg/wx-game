@@ -1,5 +1,6 @@
 import { panel, palette } from '../../render/ui';
 import { catalogEntries, catalogStatus } from '../../data/catalog';
+import { economy, openingBid } from '../../data/economy';
 import { paymentDue } from '../../rules/debt';
 
 // 设备商店直接展示购买项，避免从入口再点一层菜单。
@@ -8,7 +9,7 @@ export function workshop(scene, ctx) {
   scene.text(ctx, '设备与还款', 24, 125, 25);
   scene.text(ctx, `当前资金  ${s.coins} 金币`, 24, 158, 15, palette.gold);
   scene.paragraph(ctx, '选中轮廓货物后，先用手电看类别，再用放大镜看表面。', 24, 181, 327, 12, 2);
-  [['手电',150,'照亮一件轮廓货物，查看类别'],['放大镜',250,'检查已看清物品的表面状态']].forEach(([name,cost,description], i) => {
+  [['手电', economy.toolCost['手电'], '照亮一件轮廓货物，查看类别'], ['放大镜', economy.toolCost['放大镜'], '检查已看清物品的表面状态']].forEach(([name, cost, description], i) => {
     const x = 24; const y = 218 + i * 112; const w = 327; const owned = s.equipment.includes(name); const pledged = s.pledged && s.pledged.name === name;
     panel(ctx, x, y, w, 96, palette.panel, 14);
     drawToolIcon(ctx, name, x + 18, y + 19);
@@ -36,8 +37,9 @@ function drawToolIcon(ctx, name, x, y) {
 
 export function business(scene, ctx) {
   const s = scene.game.state; const due = paymentDue(s);
-  const dueNow = s.round > 0 && s.round % 6 === 0 && s.debtPeriod < s.round / 6;
-  const roundsLeft = dueNow ? 0 : (6 - s.round % 6 || 6);
+  const cycle = economy.repaymentCycleRounds;
+  const dueNow = s.round > 0 && s.round % cycle === 0 && s.debtPeriod < s.round / cycle;
+  const roundsLeft = dueNow ? 0 : (cycle - s.round % cycle || cycle);
   scene.text(ctx, '还款与拍卖档位', 24, 125, 25);
   scene.text(ctx, dueNow ? '本期还款日已到' : `还剩 ${roundsLeft} 场到还款日`, 24, 166, 14, palette.muted);
   scene.text(ctx, `本期还差 ${due} 金币`, 24, 203, 25, palette.gold);
@@ -50,15 +52,16 @@ export function business(scene, ctx) {
   scene.text(ctx, '提前还款抵扣最近一期，不占拍卖场次。', 24, 305, 11, palette.muted);
   scene.text(ctx, '经营目标', 24, 337, 17, palette.text);
   const photo = s.unlocked.includes('photo'); const repair = s.unlocked.includes('repair');
-  scene.text(ctx, `摄影箱 ${photo ? '已解锁' : `${Math.min(s.coins,750)} / 750 金币`}`, 24, 364, 12, photo ? palette.green : palette.muted);
-  scene.text(ctx, `维修箱 ${repair ? '已解锁' : `${Math.min(s.coins,900)} / 900 金币`}`, 190, 364, 12, repair ? palette.green : palette.muted);
+  const photoCost = economy.themeUnlock.photo; const repairCost = economy.themeUnlock.repair; const advancedEntry = economy.advancedEntryCoins;
+  scene.text(ctx, `摄影箱 ${photo ? '已解锁' : `${Math.min(s.coins, photoCost)} / ${photoCost} 金币`}`, 24, 364, 12, photo ? palette.green : palette.muted);
+  scene.text(ctx, `维修箱 ${repair ? '已解锁' : `${Math.min(s.coins, repairCost)} / ${repairCost} 金币`}`, 190, 364, 12, repair ? palette.green : palette.muted);
   const catalog = catalogEntries(s); const found = catalog.filter((entry) => catalogStatus(s, entry.name).found).length;
   scene.text(ctx, `图鉴收藏 ${found} / ${catalog.length} 种`, 24, 389, 12, palette.muted);
-  scene.button(ctx, s.tier === 'advanced' ? '已进入进阶档' : `进阶档 · ${Math.min(s.coins,2000)} / 2000 金币`, 24, 411, 327, 44, () => {
+  scene.button(ctx, s.tier === 'advanced' ? '已进入进阶档' : `进阶档 · ${Math.min(s.coins, advancedEntry)} / ${advancedEntry} 金币`, 24, 411, 327, 44, () => {
     scene.game.upgradeTier();
-    if (s.tier !== 'advanced') { s.notice = s.arrears ? '先结清逾期欠款，才能升入进阶档。' : '金币达到 2000 后可进入进阶档。'; scene.game.save(); }
-  }, s.tier === 'advanced' || s.coins < 2000 || s.arrears > 0);
-  if (s.tier === 'advanced' && s.coins < 300) scene.link(ctx, '资金不足，返回入门档', 24, 463, 327, () => { s.tier = 'starter'; scene.game.save(); });
+    if (s.tier !== 'advanced') { s.notice = s.arrears ? '先结清逾期欠款，才能升入进阶档。' : `金币达到 ${advancedEntry} 后可进入进阶档。`; scene.game.save(); }
+  }, s.tier === 'advanced' || s.coins < advancedEntry || s.arrears > 0);
+  if (s.tier === 'advanced' && s.coins < openingBid('advanced')) scene.link(ctx, '资金不足，返回入门档', 24, 463, 327, () => { s.tier = 'starter'; scene.game.save(); });
   scene.paragraph(ctx, s.notice || '还款有压力时，可以留钱、提前还款，或继续拍卖攒够资金。', 24, 489, 327, 13, 3);
   scene.button(ctx, '返回', 24, scene.height - 68, 327, 48, () => { scene.menu.view = s.phase === 'home' ? 'home' : 'shop'; });
 }

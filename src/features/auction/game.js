@@ -1,8 +1,9 @@
 import { lots } from './data/lots';
+import { economy, openingBid } from './data/economy';
 import { createRound } from './rules/round';
 import { resolveRepayment, paymentDue } from './rules/debt';
 const KEY = 'container_treasure_save_v1';
-const fresh = () => ({ phase: 'home', coins: 600, round: 0, collection: [], discovered: [], unlocked: ['band'], tier: 'starter', tierPeriod: 0, tutorialDone: true, soundEnabled: true, equipment: [], debtPeriod: 0, arrears: 0, prepaid: 0, overdue: 0, pledged: null, profitTotal: 0, ornament: 0 });
+const fresh = () => ({ phase: 'home', coins: economy.startingCoins, round: 0, collection: [], discovered: [], unlocked: ['band'], tier: 'starter', tierPeriod: 0, tutorialDone: true, soundEnabled: true, equipment: [], debtPeriod: 0, arrears: 0, prepaid: 0, overdue: 0, pledged: null, profitTotal: 0, ornament: 0 });
 
 export default class Game {
   constructor() {
@@ -24,7 +25,7 @@ export default class Game {
     if (!Array.isArray(this.state.unlocked)) this.state.unlocked = ['band'];
     if (!this.state.tier) this.state.tier = 'starter';
     if (!Number.isInteger(this.state.tierPeriod) || this.state.tierPeriod < 0) this.state.tierPeriod = this.state.debtPeriod;
-    if (!this.state.bidStep) this.state.bidStep = 20;
+    if (!this.state.bidStep) this.state.bidStep = economy.starterBidStep;
     if (this.state.pending && !Number.isFinite(this.state.pendingAt)) this.state.pendingAt = Date.now();
     if (!Number.isInteger(this.state.rivalIndex)) this.state.rivalIndex = 0;
     this.unlockThemes();
@@ -38,8 +39,8 @@ export default class Game {
   save() { try { wx.setStorageSync(KEY, this.state); } catch (e) { this.state.notice = '保存失败，请检查设备存储空间。'; } }
   reset() { const soundEnabled = this.state.soundEnabled; this.state = fresh(); this.state.soundEnabled = soundEnabled; this.prepareRound(); }
   toggleSound() { this.state.soundEnabled = !this.state.soundEnabled; this.save(); }
-  unlockThemes() { const s = this.state; if (s.coins >= 750 && !s.unlocked.includes('photo')) s.unlocked.push('photo'); if (s.coins >= 900 && !s.unlocked.includes('repair')) s.unlocked.push('repair'); }
-  upgradeTier() { const s = this.state; if (!['home', 'briefing'].includes(s.phase) || s.tier === 'advanced' || s.coins < 2000 || s.arrears) return; s.tier = 'advanced'; s.tierPeriod = 0; s.ornament = Math.max(s.ornament, 3); s.notice = '已进入进阶档：起拍 300，加价 60，下期款额从 600 起。'; this.save(); }
+  unlockThemes() { const s = this.state; const unlock = economy.themeUnlock; if (s.coins >= unlock.photo && !s.unlocked.includes('photo')) s.unlocked.push('photo'); if (s.coins >= unlock.repair && !s.unlocked.includes('repair')) s.unlocked.push('repair'); }
+  upgradeTier() { const s = this.state; if (!['home', 'briefing'].includes(s.phase) || s.tier === 'advanced' || s.coins < economy.advancedEntryCoins || s.arrears) return; s.tier = 'advanced'; s.tierPeriod = 0; s.ornament = Math.max(s.ornament, 3); s.notice = `已进入进阶档：起拍 ${economy.advancedBidStart}，加价 ${economy.advancedBidStep}，下期款额从 ${economy.advancedFirstPayment} 起。`; this.save(); }
   prepareRound() {
     const s = this.state;
     if (!['home', 'briefing', 'passed', 'settlement'].includes(s.phase)) return;
@@ -64,7 +65,7 @@ export default class Game {
   get nextLot() { const available = lots.filter((lot) => this.state.unlocked.includes(lot.theme)); return available[this.state.round % available.length]; }
   startRound() {
     const s = this.state; if (s.phase !== 'briefing') return;
-    if (s.coins < (s.tier === 'advanced' ? 300 : 100)) { s.notice = '余额不足起拍价，请整理旧物或返回入门档。'; this.save(); return; }
+    if (s.coins < openingBid(s.tier)) { s.notice = '余额不足起拍价，请整理旧物或返回入门档。'; this.save(); return; }
     const lot = this.nextLot; s.round += 1; s.lotIndex = lots.indexOf(lot);
     Object.assign(s, createRound(lot, s.tier)); this.save();
   }
@@ -88,7 +89,7 @@ export default class Game {
     const allowedPhases = ['briefing', 'observe', 'settlement'];
     if (!allowedPhases.includes(s.phase)) { s.notice = '请在开场、观察或结算时购买设备。'; this.save(); return; }
     if (!['手电', '放大镜'].includes(name)) { s.notice = '没有这件设备。'; this.save(); return; }
-    const cost = name === '手电' ? 150 : 250;
+    const cost = economy.toolCost[name];
     if (name === '放大镜' && !s.equipment.includes('手电')) s.notice = '请先购买手电。';
     else if (s.equipment.includes(name) || (s.pledged && s.pledged.name === name)) s.notice = `已拥有${name}或正在抵押。`;
     else if (s.coins < cost) s.notice = `金币不足，${name}需要 ${cost} 金币。`;
@@ -199,5 +200,5 @@ export default class Game {
     }
     this.save();
   }
-  recover() { const s = this.state; if (s.coins >= 100 || !['briefing', 'passed', 'settlement'].includes(s.phase)) return; if (s.round > 0 && s.round % 6 === 0 && s.debtPeriod < s.round / 6) { this.prepareRound(); return; } s.coins += 150; s.round += 1; s.notice = '整理旧物获得 150 金币，占用一场。'; this.prepareRound(); }
+  recover() { const s = this.state; const cycle = economy.repaymentCycleRounds; if (s.coins >= economy.recoverBelowCoins || !['briefing', 'passed', 'settlement'].includes(s.phase)) return; if (s.round > 0 && s.round % cycle === 0 && s.debtPeriod < s.round / cycle) { this.prepareRound(); return; } s.coins += economy.recoverCoins; s.round += 1; s.notice = `整理旧物获得 ${economy.recoverCoins} 金币，占用一场。`; this.prepareRound(); }
 }
