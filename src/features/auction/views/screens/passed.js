@@ -1,4 +1,5 @@
 import { palette } from '../../render/ui';
+import { dockArgs } from '../../data/round7';
 import { drawExpression, passedExpression } from '../people/expressions';
 import { passLine } from '../../data/lines';
 
@@ -14,5 +15,5 @@ export function passed(scene, ctx) {
     scene.text(ctx, `${name}：${passLine(name, s.winner)}`, x, 474, 12, palette.muted);
     scene.text(ctx, mood.label, x, 494, 13, palette.gold);
   });
-  scene.button(ctx, '继续，看下一箱', 24, scene.height - 68, 327, 48, () => scene.game.prepareRound());
+  scene.button(ctx, '继续，看下一箱', ...dockArgs(scene.height), () => scene.game.prepareRound());
 }

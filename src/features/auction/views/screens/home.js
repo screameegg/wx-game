@@ -2,6 +2,7 @@ import { cover, palette, panel } from '../../render/ui';
 import { catalogSprite } from '../../render/sprites';
 import { economy } from '../../data/economy';
 import { paymentDue } from '../../rules/debt';
+import { dockArgs, layoutTokens } from '../../data/round7';
 
 export function home(scene, ctx) {
   const s = scene.game.state;
@@ -17,11 +18,12 @@ export function home(scene, ctx) {
   scene.text(ctx, '经营目标', 34, 496, 11, palette.muted);
   scene.text(ctx, goal, 118, 506, 14, palette.text);
   scene.buttons.push({ x: 24, y: 476, w: 327, h: 48, label: '经营目标与提前还款', action: () => { scene.menu.view = 'business'; } });
-  scene.button(ctx, s.phase === 'home' ? '开始第一箱' : '继续游戏', 24, scene.height - 128, 327, 48, () => {
+  const edge = layoutTokens.margin;
+  scene.button(ctx, s.phase === 'home' ? '开始第一箱' : '继续游戏', edge, scene.height - 128, layoutTokens.designWidth - edge * 2, 48, () => {
     if (s.phase === 'home') scene.game.reset(); scene.menu.view = '';
   });
-  scene.link(ctx, '怎么玩', 24, scene.height - 63, 125, () => { scene.menu.view = 'help'; });
-  scene.link(ctx, '收藏图鉴', 230, scene.height - 63, 125, () => { scene.menu.collectionTheme = ''; scene.menu.view = 'collection'; });
+  scene.link(ctx, '怎么玩', edge, scene.height - 52, 125, () => { scene.menu.view = 'help'; });
+  scene.link(ctx, '收藏图鉴', layoutTokens.designWidth - edge - 125, scene.height - 52, 125, () => { scene.menu.collectionTheme = ''; scene.menu.view = 'collection'; });
 }
 export function help(scene, ctx) {
   scene.text(ctx, '拍卖与经营，四步上手', 24, 125, 25);
@@ -32,5 +34,5 @@ export function help(scene, ctx) {
     ['4  经营成长', '攒钱还款、提前还款、购买设备、解锁新主题和进阶拍场，逐步补全图鉴。'],
   ];
   rows.forEach(([title, text], i) => { scene.text(ctx, title, 24, 178 + i * 98, 18, palette.gold); scene.paragraph(ctx, text, 24, 207 + i * 98, 327, 13, 3); });
-  scene.button(ctx, '明白了，去试一箱', 24, scene.height - 68, 327, 48, () => { if (scene.game.state.phase === 'home') scene.game.reset(); scene.menu.view = ''; });
+  scene.button(ctx, '明白了，去试一箱', ...dockArgs(scene.height), () => { if (scene.game.state.phase === 'home') scene.game.reset(); scene.menu.view = ''; });
 }

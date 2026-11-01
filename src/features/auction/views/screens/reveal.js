@@ -1,4 +1,5 @@
 import { steps } from '../shared/chrome';
+import { dockArgs } from '../../data/round7';
 import { palette } from '../../render/ui';
 import { rarityTier, settleBeat } from '../../data/round6';
 import {
@@ -14,7 +15,7 @@ export function reveal(scene, ctx, now = Date.now()) {
   const index = currentIndex(s);
   if (index < 0) {
     scene.text(ctx, '这箱都处理完了', 24, scene.height - 96, 16, palette.gold);
-    scene.button(ctx, '看看这箱赚亏多少', 24, scene.height - 68, 327, 48, () => scene.game.prepareRound());
+    scene.button(ctx, '看看这箱赚亏多少', ...dockArgs(scene.height), () => scene.game.prepareRound());
     return;
   }
 

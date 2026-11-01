@@ -2,7 +2,8 @@ import { steps } from '../shared/chrome';
 import { drawPlayerPaddle } from '../people/actors';
 import { auctionExpression, drawExpression } from '../people/expressions';
 import { palette, progress, panel } from '../../render/ui';
-import { drawAuctionBeat, drawLeadBadge, drawLeadGlow, drawRaiseButton, isLeader, liveExpression } from '../../fx/round5-beats';
+import { drawAuctionBeat, drawLeadBadge, drawLeadGlow, isLeader, liveExpression } from '../../fx/round5-beats';
+import { splitDock } from '../../data/round7';
 
 // 竞价只显示对手、价格与决策，不注册货物热区。节拍只画在这一层。
 export function bidding(scene, ctx, now = Date.now()) {
@@ -34,11 +35,12 @@ export function bidding(scene, ctx, now = Date.now()) {
   scene.paragraph(ctx, s.pending ? '对手正在考虑……' : (s.notice || '轮到你决定。'), 24, 506, 327, 13, 2);
   if (s.pending) progress(ctx, 24, 536, 327, Math.min(1, (Date.now() - s.pendingAt) / 1200));
   if (!s.pending) scene.link(ctx, '回看箱内线索', 24, 558, 150, () => { scene.reviewing = true; });
-  scene.button(ctx, '放弃', 24, scene.height - 68, 105, 48, () => scene.game.pass(), true);
+  const dock = splitDock(scene.height);
+  scene.button(ctx, '放弃', dock.secondary.x, dock.secondary.y, dock.secondary.w, dock.secondary.h, () => scene.game.pass(), true);
   const next = s.leader === '拍卖员' ? s.price : s.price + s.bidStep;
   const disabled = s.pending || next > s.coins;
   const label = s.pending ? '等待对手…' : `${s.leader === '拍卖员' ? '开价' : '加价'} ${next} 金币`;
-  scene.button(ctx, label, 140, scene.height - 68, 211, 48, () => scene.game.bid(), false, {
-    role: 'raise', disabled, confirm: 'release', paint: drawRaiseButton,
+  scene.button(ctx, label, dock.primary.x, dock.primary.y, dock.primary.w, dock.primary.h, () => scene.game.bid(), false, {
+    role: 'raise', disabled, confirm: 'release',
   });
 }

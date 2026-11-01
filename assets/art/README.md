@@ -76,3 +76,15 @@ Reveal-feel reference boards. Timings and hit zones live in `src/features/auctio
 - `assets/art/falcon-art-round6/reveal_flip_frames.png` — tap-to-enlarge, flip, then the readable front. Queue scale rests at 1.15–1.25; the next item takes 300–500ms.
 - `assets/art/falcon-art-round6/sell_collect_layout.png` — primary 「卖掉」versus secondary 「收下」, wide gap, separate icon and color.
 - `assets/art/falcon-art-round6/rare_sparkle_frame.png` — one rare highlight frame. In game it lasts at most 300ms and does not loop. Normal items draw none.
+
+# Falcon art round 7
+
+Top bar and primary CTA reference boards. Layout, colors, and the debt-strip sentence live in `src/features/auction/data/round7.js`. These sheets include captions, so nothing here is pasted into the screen (`useSheet: false`). Bids, amount due, and remaining auctions are not read from the pixels.
+
+- `assets/art/falcon-art-round7/topbar_polish.png` — cash cluster larger than the debt strip. Copy on the strip is 「应还 X · 剩 N 场」 (amount due, auctions left).
+- `assets/art/falcon-art-round7/cta_primary_states.png` — one primary button: default `#E8A54B`, pressed darker, disabled `#C4A484`.
+- `assets/art/falcon-art-round7/layout_margin_16.png` — 16px frame inside the safe area. One amber primary, kraft secondary.
+
+Palette used by the chrome and the primary button only: `#2F5D50` `#E8A54B` `#C4A484` `#F5EDE0` `#2B2B2B` `#B85C38`.
+
+Older spec, same rules: `assets/art/ui/topbar-cta-spec.jpg`.

@@ -1,4 +1,5 @@
 import { panel, palette } from '../../render/ui';
+import { dockArgs } from '../../data/round7';
 import { catalogEntries, catalogStatus } from '../../data/catalog';
 import { catalogSprite } from '../../render/sprites';
 
@@ -16,7 +17,7 @@ export function collection(scene, ctx) {
       const count = group.filter((entry) => catalogStatus(s, entry.name).found).length;
       scene.button(ctx, `${title}  ${count} / ${group.length}`, 24, 180 + i * 66, 327, 52, () => { menu.collectionTheme = key; menu.collectionPage = 0; }, true);
     });
-    scene.button(ctx, '返回首页', 24, scene.height - 68, 327, 48, () => { menu.view = 'home'; });
+    scene.button(ctx, '返回首页', ...dockArgs(scene.height), () => { menu.view = 'home'; });
     return;
   }
   const group = entries.filter((entry) => entry.theme === menu.collectionTheme);
@@ -35,7 +36,7 @@ export function collection(scene, ctx) {
   });
   if (menu.collectionPage > 0) scene.button(ctx, '上一页', 24, 454, 145, 42, () => { menu.collectionPage--; }, true);
   if (menu.collectionPage + 1 < pages) scene.button(ctx, '下一页', 206, 454, 145, 42, () => { menu.collectionPage++; }, true);
-  scene.button(ctx, '返回分类', 24, scene.height - 68, 327, 48, () => { menu.collectionTheme = ''; });
+  scene.button(ctx, '返回分类', ...dockArgs(scene.height), () => { menu.collectionTheme = ''; });
 }
 
 export function collectionDetail(scene, ctx) {
@@ -48,5 +49,5 @@ export function collectionDetail(scene, ctx) {
   scene.text(ctx, status.pledged ? '抵押中' : status.count ? `已收藏 ${status.count} 件` : '曾收藏', 24, 382, 16, palette.gold);
   scene.paragraph(ctx, entry.story, 24, 425, 327, 15, 3);
   if (status.pledged) scene.text(ctx, '补齐欠款后自动赎回', 24, 515, 13, palette.muted);
-  scene.button(ctx, '返回图鉴', 24, scene.height - 68, 327, 48, () => { scene.menu.view = 'collection'; });
+  scene.button(ctx, '返回图鉴', ...dockArgs(scene.height), () => { scene.menu.view = 'collection'; });
 }
