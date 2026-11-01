@@ -1,4 +1,5 @@
 import { bidIncrement, lotValueMultiplier, openingBid } from '../data/economy';
+import { auctioneerLineFor } from '../data/lines';
 
 function pickPreset(lot) {
   let roll = Math.random() * 100; let index = 0;
@@ -37,7 +38,9 @@ function pickBonus(lot, multiplier) {
 export function createRound(lot, tier) {
   const preset = pickPreset(lot); const multiplier = lotValueMultiplier(tier);
   const auctioneerLines = lot.auctioneerLines || [lot.story];
-  const auctioneerLine = auctioneerLines[Math.floor(Math.random() * auctioneerLines.length)];
+  // 仍消耗一次随机，避免后面的开门和对手预算跟着台词改动。
+  const rolled = auctioneerLines[Math.floor(Math.random() * auctioneerLines.length)];
+  const auctioneerLine = auctioneerLineFor(lot) || rolled;
   // 首版只有门缝、半开和全开。
   const openingRoll = Math.random();
   const opening = openingRoll < 0.2 ? '门缝' : openingRoll < 0.7 ? '半开' : '全开';

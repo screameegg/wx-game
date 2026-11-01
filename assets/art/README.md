@@ -27,3 +27,16 @@ Each id has a normal image and a silhouette. Visibility 0/1 uses the silhouette.
 - `assets/art/items/band/speaker_01_silhouette.png`
 
 Debt bar semantic: remaining rounds (not calendar date).
+
+# Falcon art round 2
+
+Speaker busts and speech-bubble frames. Paths only; no dialogue copy in this drop.
+
+- `assets/art/speakers/auctioneer_bust.png` — auctioneer half-body, 1024×1024
+- `assets/art/speakers/creditor_bust.png` — creditor half-body, 1024×1024
+- `assets/art/ui/bubble_auctioneer.png` — auctioneer bubble frame, 1280×720
+- `assets/art/ui/bubble_creditor.png` — creditor bubble frame, 1280×720
+- `assets/art/rivals/laozhou_speak.png` — Lao Zhou speaking, 1024×1024
+- `assets/art/rivals/alan_speak.png` — A Lan speaking, 1024×1024
+
+Path map: `src/features/auction/data/round2-art.js` (`round2Art`).

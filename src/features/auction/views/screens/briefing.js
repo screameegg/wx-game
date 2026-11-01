@@ -1,4 +1,4 @@
-import { cover, palette } from '../../render/ui';
+import { cover, palette, panel } from '../../render/ui';
 import { economy, openingBid } from '../../data/economy';
 import { paymentDue } from '../../rules/debt';
 
@@ -7,6 +7,11 @@ export function briefing(scene, ctx) {
   scene.text(ctx, `第 ${s.round + 1} 场拍卖`, 24, 103, 13, palette.muted);
   scene.text(ctx, lot.name, 23, 141, 25);
   cover(ctx, scene.art.get('harbor'), 24, 172, 327, 171);
+  if (s.creditorLine) {
+    panel(ctx, 24, 292, 327, 51, '#fff9ed', 10);
+    scene.text(ctx, '债主', 36, 314, 12, palette.gold);
+    scene.paragraph(ctx, s.creditorLine, 72, 314, 263, 13, 2);
+  }
   scene.text(ctx, '这箱货的来历', 24, 379, 17, palette.gold);
   scene.paragraph(ctx, lot.story, 24, 411, 327, 15, 3);
   const cycle = economy.repaymentCycleRounds; const roundsLeft = cycle - s.round % cycle || cycle;
