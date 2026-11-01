@@ -109,3 +109,16 @@ Repo slots:
 - `crate_01` — `assets/art/lots/repair/crate_01.png` + `crate_01_silhouette.png` (`repairCrate`)
 
 Outline and silhouette share the `_silhouette.png` slot, same as the band pieces.
+
+# Falcon art round 9
+
+Collection cells, the treasure badge, and the warehouse list. Paths live in `src/features/auction/data/round9.js`. These boards are presentation only. Hammer price, PnL, collection contents, warehouse counts, coins, and debt do not read them.
+
+The sheets may include captions, so nothing here is pasted into the screen (`useSheet: false`). Live plates, the corner badge, warehouse rows, and empty states are drawn from the layout tokens. If a file is missing, the screen keeps the vector placeholder. The treasure badge sits in the top-right corner, one frame, no loop and no flash. Drop folder, same file names: `/workspace/falcon-art-round9/`.
+
+- `cell_plate_empty.png` — empty collection cell (not yet collected)
+- `cell_plate_collected.png` — collected cell plate
+- `rare_badge.png` — treasure corner badge 「珍品」
+- `warehouse_row.png` — warehouse row (thumb, name, short status)
+- `empty_collection.png` — optional empty-collection illustration
+- `empty_warehouse.png` — optional empty-warehouse illustration
