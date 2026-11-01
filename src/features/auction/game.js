@@ -2,6 +2,7 @@ import { lots } from './data/lots';
 import { economy, openingBid } from './data/economy';
 import { createRound } from './rules/round';
 import { resolveRepayment, paymentDue } from './rules/debt';
+import { applyCreditor, briefingCreditorKey } from './data/lines';
 const KEY = 'container_treasure_save_v1';
 const fresh = () => ({ phase: 'home', coins: economy.startingCoins, round: 0, collection: [], discovered: [], unlocked: ['band'], tier: 'starter', tierPeriod: 0, tutorialDone: true, soundEnabled: true, equipment: [], debtPeriod: 0, arrears: 0, prepaid: 0, overdue: 0, pledged: null, profitTotal: 0, ornament: 0 });
 
@@ -41,15 +42,35 @@ export default class Game {
   toggleSound() { this.state.soundEnabled = !this.state.soundEnabled; this.save(); }
   unlockThemes() { const s = this.state; const unlock = economy.themeUnlock; if (s.coins >= unlock.photo && !s.unlocked.includes('photo')) s.unlocked.push('photo'); if (s.coins >= unlock.repair && !s.unlocked.includes('repair')) s.unlocked.push('repair'); }
   upgradeTier() { const s = this.state; if (!['home', 'briefing'].includes(s.phase) || s.tier === 'advanced' || s.coins < economy.advancedEntryCoins || s.arrears) return; s.tier = 'advanced'; s.tierPeriod = 0; s.ornament = Math.max(s.ornament, 3); s.notice = `已进入进阶档：起拍 ${economy.advancedBidStart}，加价 ${economy.advancedBidStep}，下期款额从 ${economy.advancedFirstPayment} 起。`; this.save(); }
+  roundsUntilPayment() {
+    const cycle = economy.repaymentCycleRounds;
+    return cycle - (this.state.round % cycle) || cycle;
+  }
+  speakOnBriefing(reason) {
+    applyCreditor(this.state, briefingCreditorKey({
+      fromHome: reason === 'start',
+      afterSeize: reason === 'afterSeize',
+      roundsLeft: this.roundsUntilPayment(),
+      arrears: this.state.arrears || 0,
+    }));
+  }
   prepareRound() {
     const s = this.state;
+    const fromHome = s.phase === 'home';
     if (!['home', 'briefing', 'passed', 'settlement'].includes(s.phase)) return;
     this.unlockThemes();
     if (resolveRepayment(s)) s.phase = 'repayment';
-    else { s.phase = 'briefing'; s.notice = ''; }
+    else { s.phase = 'briefing'; s.notice = ''; this.speakOnBriefing(fromHome ? 'start' : ''); }
     this.save();
   }
-  continueAfterRepayment() { if (this.state.phase !== 'repayment') return; this.state.phase = 'briefing'; this.save(); }
+  continueAfterRepayment() {
+    const s = this.state;
+    if (s.phase !== 'repayment') return;
+    const afterSeize = s.creditorKey === 'seize';
+    s.phase = 'briefing';
+    this.speakOnBriefing(afterSeize ? 'afterSeize' : '');
+    this.save();
+  }
   repayEarly(amount) {
     const s = this.state;
     if (!['home', 'briefing', 'passed', 'settlement'].includes(s.phase)) { s.notice = '拍卖进行中不能处理还款。'; this.save(); return; }

@@ -1,6 +1,7 @@
 import { divider, palette, panel } from '../../render/ui';
 import { drawPlayerPaddle } from '../people/actors';
 import { drawExpression, settlementExpression } from '../people/expressions';
+import { judgeLine } from '../../data/lines';
 
 export function settlement(scene, ctx) {
   const s = scene.game.state; const net = s.income - s.spent;
@@ -21,9 +22,9 @@ export function settlement(scene, ctx) {
   drawExpression(scene, ctx, 0, zhou, 28, 228 + extra, 112, 112);
   drawExpression(scene, ctx, 1, lan, 220, 228 + extra, 112, 112);
   const quoteY = 354 + extra;
-  scene.text(ctx, roi >= 1.5 ? '老周：看走眼了' : roi >= 1 ? '老周：不错' : roi >= 0.5 ? '老周：还好没跟' : '老周：下次小心', 28, quoteY, 12);
+  scene.text(ctx, `老周：${judgeLine(roi, '老周')}`, 28, quoteY, 12);
   scene.text(ctx, zhou.label, 28, quoteY + 18, 12, palette.gold);
-  scene.text(ctx, roi >= 1.5 ? '阿岚：不服！' : roi >= 1 ? '阿岚：哼' : '阿岚：哈哈！', 220, quoteY, 12);
+  scene.text(ctx, `阿岚：${judgeLine(roi, '阿岚')}`, 220, quoteY, 12);
   scene.text(ctx, lan.label, 220, quoteY + 18, 12, palette.gold);
   drawPlayerPaddle(ctx, 156, quoteY + 28, 52, 78, s.ornament);
   if (s.ornamentNotice) scene.text(ctx, s.ornamentNotice, 24, quoteY + 112, 12, palette.gold);
@@ -33,9 +34,14 @@ export function settlement(scene, ctx) {
 }
 
 export function repayment(scene, ctx) {
+  const s = scene.game.state;
   scene.text(ctx, '到了还款日', 24, 130, 26);
-  scene.paragraph(ctx, scene.game.state.notice, 24, 205, 327, 18, 6);
-  scene.text(ctx, `当前余额 ${scene.game.state.coins} 金币`, 24, 412, 21, palette.gold);
+  if (s.creditorLine) {
+    scene.text(ctx, '债主', 24, 176, 13, palette.gold);
+    scene.paragraph(ctx, s.creditorLine, 24, 204, 327, 16, 3);
+    scene.paragraph(ctx, s.notice, 24, 280, 327, 14, 4);
+  } else scene.paragraph(ctx, s.notice, 24, 205, 327, 18, 6);
+  scene.text(ctx, `当前余额 ${s.coins} 金币`, 24, 412, 21, palette.gold);
   scene.button(ctx, '继续经营', 24, scene.height - 68, 327, 48, () => scene.game.continueAfterRepayment());
 }
 

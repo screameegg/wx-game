@@ -1,5 +1,6 @@
 import { palette } from '../../render/ui';
 import { drawExpression, passedExpression } from '../people/expressions';
+import { passLine } from '../../data/lines';
 
 // 流拍和被对手拍下时不公开箱内内容。拍下者笑，另一位轻松。
 export function passed(scene, ctx) {
@@ -10,7 +11,7 @@ export function passed(scene, ctx) {
     const x = i ? 205 : 35;
     const mood = passedExpression(name, s.winner);
     drawExpression(scene, ctx, i, mood, x, 330, 130, 130);
-    scene.text(ctx, s.winner === name ? `${name}：这箱归我了` : `${name}：下一箱见`, x, 474, 12, palette.muted);
+    scene.text(ctx, `${name}：${passLine(name, s.winner)}`, x, 474, 12, palette.muted);
     scene.text(ctx, mood.label, x, 494, 13, palette.gold);
   });
   scene.button(ctx, '继续，看下一箱', 24, scene.height - 68, 327, 48, () => scene.game.prepareRound());
