@@ -3,8 +3,10 @@ import Menu from './menu';
 import AuctionArt from './render/art';
 import { header } from './views/shared/chrome';
 import { gameRoutes } from './views/screens/index';
+import { observe } from './views/screens/observe';
 import { stage } from './render/cargo';
-import { drawFeedback, durations } from './render/motion';
+import { durations } from './render/motion';
+import { drawFeedback } from './fx/beats';
 
 // 场景只负责路由与局部动效；每个阶段有自己的绘制模块。
 export default class GameScene extends CanvasView {

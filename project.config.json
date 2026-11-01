@@ -20,6 +20,10 @@
   "packOptions": {
     "ignore": [
       {
+        "value": "tests",
+        "type": "folder"
+      },
+      {
         "value": "tools",
         "type": "folder"
       },

@@ -2,6 +2,7 @@ import { createScreen } from '../platform/screen';
 import Game from '../features/auction/game';
 import GameScene from '../features/auction/scene';
 import Effects from '../features/audio/effects';
+import { audible, cueFromResponse, cueFromTouch } from '../features/auction/fx/cues';
 
 // 帧循环负责真实动画，游戏规则仍由 Game 独立管理。
 export default class App {
@@ -19,26 +20,14 @@ export default class App {
     const s = this.game.state;
     const before = { phase: s.phase, selected: s.selected, income: s.income, pending: s.pending, collected: s.collection.length, evidence: (s.items || []).map((item) => [item.categoryKnown, item.conditionKnown]), statuses: (s.items || []).map((item) => item.status) };
     this.scene.touch(touch.clientX, touch.clientY);
-    this.feedback(before); this.render();
+    this.playCue(cueFromTouch(before, this.game.state, { reviewing: this.scene.reviewing }));
+    this.render();
   }
-  feedback(before) {
-    const s = this.game.state; let kind; let sound;
-    const inspected = s.selected >= 0 && s.items[s.selected];
-    const inspecting = s.phase === 'observe' || (s.phase === 'auction' && this.scene.reviewing && !s.pending);
-    if (inspecting && inspected && !before.evidence[s.selected][0] && inspected.categoryKnown) kind = 'flashlight';
-    else if (inspecting && inspected && !before.evidence[s.selected][1] && inspected.conditionKnown) kind = 'magnify';
-    else if (inspecting && s.selected >= 0 && before.selected !== s.selected) kind = 'inspect';
-    else if (before.phase === 'briefing' && s.phase === 'observe') { kind = 'open'; sound = 'open'; }
-    else if (before.phase === 'auction' && s.phase === 'reveal') { kind = 'hammer'; sound = 'hammer'; }
-    else if (s.income > before.income) { kind = 'sell'; sound = 'sell'; }
-    else if (s.collection.length > before.collected) { kind = 'collect'; sound = 'reveal'; }
-    else if (s.pending && !before.pending) { kind = 'bid'; sound = 'bid'; }
-    else if (s.phase === 'reveal' && s.selected >= 0 && before.selected !== s.selected && s.items[s.selected].status === 'revealed') { kind = 'reveal'; sound = 'reveal'; }
-    if (kind) {
-      const index = kind === 'sell' || kind === 'collect' ? before.selected : s.selected;
-      this.scene.playEffect(kind, { index, amount: s.income - before.income });
-      if (sound) this.effects.play(sound, s.soundEnabled);
-    }
+  playCue(beat) {
+    if (!beat) return;
+    this.scene.playEffect(beat.kind, beat.detail || {});
+    const gate = { soundEnabled: this.game.state.soundEnabled, paused: !!this.scene.menu.view, hidden: this.hidden };
+    if (audible(beat, gate)) this.effects.play(beat.sound, true);
   }
   animate() {
     if (this.animationId !== null || this.hidden) return;
@@ -61,10 +50,8 @@ export default class App {
       this.reactionTimer = null;
       if (this.hidden || this.scene.menu.view) return;
       this.game.respond();
-      // 成交后 phase 直接变 reveal（废除 announcement）；passed 也视为落槌结束
-      const won = this.game.state.phase === 'reveal' || this.game.state.phase === 'passed';
-      this.scene.playEffect(won ? 'hammer' : 'bid');
-      this.effects.play(won ? 'hammer' : 'bid', this.game.state.soundEnabled); this.render();
+      this.playCue(cueFromResponse(this.game.state));
+      this.render();
     }, Math.max(0, 1200 - (Date.now() - s.pendingAt)));
   }
   render() {

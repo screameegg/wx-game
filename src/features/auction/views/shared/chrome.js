@@ -8,6 +8,7 @@ export function header(scene, ctx) {
   const s = scene.game.state; const due = paymentDue(s);
   const completed = ['observe', 'auction', 'reveal'].includes(s.phase) ? Math.max(0, s.round - 1) : s.round;
   const cycle = economy.repaymentCycleRounds; const remaining = completed > 0 && completed % cycle === 0 && s.debtPeriod < completed / cycle ? 0 : cycle - completed % cycle;
+  // 债务条是剩余场数，不是日期。规格见 assets/art/ui/topbar-cta-spec.jpg。
   scene.text(ctx, `应还 ${due} · 剩 ${remaining} 场`, 22, 55, 11, palette.muted);
   scene.button(ctx, scene.menu.view ? '首页' : '菜单', 318, 11, 43, 30, () => { scene.game.save(); scene.menu.view = scene.menu.view ? 'home' : 'pause'; }, true);
 }
