@@ -8,6 +8,8 @@ import { stage } from './render/cargo';
 import { durations } from './render/motion';
 import { drawFeedback } from './fx/beats';
 import { drawDeviceUpgrade } from './fx/device-upgrade';
+import { clampPause, preHammerBeat } from './data/round5';
+import { drawPreHammerHold, syncAuctionBeat } from './fx/round5-beats';
 
 // 场景只负责路由与局部动效；每个阶段有自己的绘制模块。
 export default class GameScene extends CanvasView {
@@ -16,6 +18,12 @@ export default class GameScene extends CanvasView {
   }
   playEffect(kind, detail = {}) {
     const fx = { ...detail, kind, at: Date.now() };
+    // 落槌动画晚半拍再开始。对局已经记好成交价，这里只改时间轴。
+    if (kind === 'hammer') {
+      fx.startedAt = fx.at;
+      fx.pauseMs = clampPause(preHammerBeat.pauseMs);
+      fx.at = fx.startedAt + fx.pauseMs;
+    }
     if (kind === 'debtTick') { this.debtTick = fx; return; }
     if (kind === 'watchUnlock') {
       if (this.watchShown) return;
@@ -25,6 +33,10 @@ export default class GameScene extends CanvasView {
     }
     this.effect = fx;
   }
+  hammerHolding(now = Date.now()) {
+    const fx = this.effect;
+    return !!(fx && fx.kind === 'hammer' && Number.isFinite(fx.at) && now < fx.at);
+  }
   get motionActive() {
     const now = Date.now();
     const alive = (fx) => !!fx && now - fx.at < (durations[fx.kind] || 1000);
@@ -33,11 +45,19 @@ export default class GameScene extends CanvasView {
   render(ctx) {
     this.prepare(ctx); const phase = this.game.state.phase;
     if (phase !== 'auction') this.reviewing = false;
-    // 货柜背景：观察和揭晓时都显示，让玩家始终身处货柜前
-    if (!this.menu.view && (['observe', 'reveal'].includes(phase) || this.reviewing)) stage(this, ctx);
+    if (phase !== 'auction' && this.pointer && this.pointer.role === 'raise') this.pointer = null;
+    syncAuctionBeat(this);
+    const holding = this.hammerHolding() && !this.menu.view;
+    if (holding && this.game.state.winner === '你' && Number.isFinite(this.game.state.spent)) {
+      this.coinPreview = this.game.state.coins + this.game.state.spent;
+    }
+    // 停顿时不画货柜，避免提前露出真货。
+    if (!holding && !this.menu.view && (['observe', 'reveal'].includes(phase) || this.reviewing)) stage(this, ctx);
     header(this, ctx);
+    this.coinPreview = null;
     if (this.menu.view) { this.menu.render(this, ctx); return; }
     if (this.reviewing) { observe(this, ctx); drawDeviceUpgrade(this, ctx); return; }
+    if (holding) { drawPreHammerHold(this, ctx); return; }
     // passed（放弃/被抢走）直接渲染为轻量提示
     if (gameRoutes[phase]) gameRoutes[phase](this, ctx);
     drawFeedback(this, ctx);

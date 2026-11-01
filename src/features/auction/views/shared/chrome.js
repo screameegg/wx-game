@@ -5,7 +5,8 @@ import { drawDebtCountdown } from '../../fx/debt-tick';
 
 export function header(scene, ctx) {
   scene.text(ctx, '集装箱寻宝', 22, 33, 17);
-  scene.text(ctx, `${scene.game.state.coins} 金币`, 222, 32, 14, palette.gold);
+  const coins = Number.isFinite(scene.coinPreview) ? scene.coinPreview : scene.game.state.coins;
+  scene.text(ctx, `${coins} 金币`, 222, 32, 14, palette.gold);
   const s = scene.game.state; const due = paymentDue(s);
   const remaining = auctionsRemaining(s);
   // 债务条是剩余场数，不是日期。规格见 assets/art/ui/topbar-cta-spec.jpg。
