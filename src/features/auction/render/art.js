@@ -2,6 +2,7 @@ import { bandItemIds, bandPieceKey, bandPiecePath, round1Art } from '../data/rou
 import { round3Art } from '../data/round3';
 import { round5Art } from '../data/round5';
 import { round8Slots } from '../data/round8-art';
+import { round9Slots } from '../data/round9';
 
 const root = 'assets/resources/art';
 const files = { harbor: 'container', zhouSheet: 'rivals', lanSheet: 'rivals', itemSheet: 'cargo', resultSheet: 'cargo', extraSheet: 'photo-repair' };
@@ -25,6 +26,13 @@ export default class AuctionArt {
     }));
     // 摄影 / 维修单件图。文件不存在就留空，画面回退到原剪影或文字。
     round8Slots.forEach((slot) => {
+      const image = wx.createImage();
+      image.onload = () => { this.images[slot.key] = image; redraw(); };
+      image.onerror = () => redraw();
+      image.src = slot.path;
+    });
+    // 收藏格底板、珍品角标和空态图。文件没到就留空，画面用矢量占位。
+    round9Slots.forEach((slot) => {
       const image = wx.createImage();
       image.onload = () => { this.images[slot.key] = image; redraw(); };
       image.onerror = () => redraw();

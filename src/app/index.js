@@ -12,6 +12,7 @@ export default class App {
     this.animationId = null; this.reactionTimer = null; this.hidden = false; this.lastFrame = 0;
     this.scene = new GameScene(this.screen, this.game, () => this.render());
     wx.onTouchStart((event) => this.onPointer('down', event));
+    if (typeof wx.onTouchMove === 'function') wx.onTouchMove((event) => this.onPointer('move', event));
     if (typeof wx.onTouchEnd === 'function') wx.onTouchEnd((event) => this.onPointer('up', event));
     if (typeof wx.onTouchCancel === 'function') wx.onTouchCancel(() => this.onPointer('cancel', {}));
     if (wx.onHide) wx.onHide(() => { this.hidden = true; this.game.save(); this.render(); });
@@ -21,6 +22,12 @@ export default class App {
   onPointer(kind, event) {
     const pool = kind === 'down' ? event.touches : (event.changedTouches || event.touches);
     const touch = pool && pool[0];
+    if (kind === 'move') {
+      const moving = event.touches && event.touches[0];
+      if (this.hidden || !moving || typeof this.scene.pointerMove !== 'function') return;
+      if (this.scene.pointerMove(moving.clientX, moving.clientY)) this.render();
+      return;
+    }
     if (this.hidden || (kind !== 'cancel' && !touch)) return;
     const s = this.game.state;
     const before = { phase: s.phase, selected: s.selected, income: s.income, pending: s.pending, collected: s.collection.length, ornament: s.ornament, remaining: auctionsRemaining(s), evidence: (s.items || []).map((item) => [item.categoryKnown, item.conditionKnown]), statuses: (s.items || []).map((item) => item.status) };

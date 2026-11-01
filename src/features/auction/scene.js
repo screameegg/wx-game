@@ -11,6 +11,7 @@ import { drawDeviceUpgrade } from './fx/device-upgrade';
 import { clampPause, preHammerBeat } from './data/round5';
 import { drawPreHammerHold, syncAuctionBeat } from './fx/round5-beats';
 import { revealNeedsFrame, syncRevealReel } from './fx/round6-beats';
+import { beginShelfDrag, dragShelf, endShelfDrag } from './fx/round9-shelf';
 
 // 场景只负责路由与局部动效；每个阶段有自己的绘制模块。
 export default class GameScene extends CanvasView {
@@ -43,8 +44,19 @@ export default class GameScene extends CanvasView {
     const alive = (fx) => !!fx && now - fx.at < (durations[fx.kind] || 1000);
     return alive(this.effect) || alive(this.debtTick) || alive(this.watchUnlock) || revealNeedsFrame(this, now);
   }
+  pointerDown(x, y) {
+    beginShelfDrag(this, x, y);
+    return super.pointerDown(x, y);
+  }
+  pointerMove(x, y) {
+    return dragShelf(this, x, y);
+  }
+  pointerUp(x, y) {
+    if (endShelfDrag(this)) return true;
+    return super.pointerUp(x, y);
+  }
   render(ctx) {
-    this.prepare(ctx); const phase = this.game.state.phase;
+    this.prepare(ctx); this.shelf = null; const phase = this.game.state.phase;
     if (phase !== 'auction') this.reviewing = false;
     if (phase !== 'auction' && this.pointer && this.pointer.role === 'raise') this.pointer = null;
     syncAuctionBeat(this);

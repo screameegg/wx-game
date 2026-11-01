@@ -109,3 +109,17 @@ Repo slots:
 - `crate_01` — `assets/art/lots/repair/crate_01.png` + `crate_01_silhouette.png` (`repairCrate`)
 
 Outline and silhouette share the `_silhouette.png` slot, same as the band pieces.
+
+# Falcon art round 9
+
+Collection grid and warehouse list. Path map: `src/features/auction/data/round9.js`. Spacing, copy, and these paths are presentation only. Bids, hammer price, debt, PnL, collection judgment, and lot prices do not read them.
+
+The live screen draws vector plates, a single static rare seal, and empty-state doodles because `useSheet` is false. The files below are stand-ins for falcon-art-round9 (cell plates, one rare badge, empty collection, empty warehouse). They are not caption sheets. When the real art arrives, replace the files and set `useSheet` to true; missing files keep the vector fallback. The badge stays one mark in the top-right corner and does not blink or loop.
+
+- `assets/art/falcon-art-round9/cell_plate.png` — collected cell plate
+- `assets/art/falcon-art-round9/cell_plate_idle.png` — not-yet-collected cell plate
+- `assets/art/falcon-art-round9/rare_badge.png` — one rare corner seal
+- `assets/art/falcon-art-round9/empty_collection.png` — empty catalog spot
+- `assets/art/falcon-art-round9/empty_warehouse.png` — empty warehouse spot
+
+External drop names match: `/workspace/falcon-art-round9/<file>`.

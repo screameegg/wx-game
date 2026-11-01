@@ -1,5 +1,6 @@
 import { palette } from '../../render/ui';
 import { dockArgs } from '../../data/round7';
+import { openCollection } from './collection';
 
 export function options(scene, ctx) {
   const s = scene.game.state;
@@ -7,7 +8,7 @@ export function options(scene, ctx) {
   const rows = [
     [s.phase === 'home' ? '开始游戏' : '回到游戏', () => { if (s.phase === 'home') scene.game.reset(); scene.menu.view = ''; }],
     ['怎么玩', () => { scene.menu.view = 'help'; }],
-    ['收藏图鉴', () => { scene.menu.view = 'collection'; }],
+    ['收藏图鉴', () => { openCollection(scene.menu); }],
     [`声音：${s.soundEnabled ? '开' : '关'}`, () => scene.game.toggleSound()],
     ['重新开始', () => { scene.menu.view = 'confirm'; }],
     ['返回首页', () => { scene.menu.view = 'home'; }],
