@@ -1,15 +1,17 @@
 // 第十轮结算、还款日和进阶提示。只放分区、文案和参考图路径。
 // 成交价、盈亏、库存和债务都由规则算好后传进来。这里不写回，也不另存一套门槛。
-// 三张图可以后补到仓库或 /workspace/falcon-art-round10/。缺文件时用手绘铭牌。
+// 对照板带示例数字和标题，不能整张贴进画面。useSheet 关掉，缺图时用手绘铭牌。
+// TODO: 若以后给到无字切片，再把 useSheet 打开。
 
 import { dockBox, layoutTokens, splitDock } from './round7';
 
 export const round10DropRoot = '/workspace/falcon-art-round10';
 
 export const round10Files = {
-  settlement: 'settlement_plate.png',
-  repayCard: 'repay_day_card.png',
-  advanceTip: 'advance_tip.png',
+  settlement: 'settle_screen_hierarchy.png',
+  repayCard: 'repay_day_cards.png',
+  advanceTip: 'advance_touch_frame.png',
+  repayButton: 'repay_button_states.png',
 };
 
 export function round10RepoPath(file) {
@@ -24,8 +26,8 @@ export const round10Art = {
   settlement: round10RepoPath(round10Files.settlement),
   repayCard: round10RepoPath(round10Files.repayCard),
   advanceTip: round10RepoPath(round10Files.advanceTip),
-  // 图只挂在铭牌角落。开着也会在缺图时退回手绘框，不挡住数字。
-  useSheet: true,
+  repayButton: round10RepoPath(round10Files.repayButton),
+  useSheet: false,
 };
 
 export const round10Slots = Object.entries(round10Files).map(([key, file]) => ({
@@ -37,21 +39,21 @@ export const round10Slots = Object.entries(round10Files).map(([key, file]) => ({
 
 // 色阶按已经算好的盈亏来，不改收入和成交。净额为 0 单独做持平。
 export const pnlTones = {
-  big_win: { band: '大赚', verb: '赚了', fill: '#E4F2DE', ink: '#1B5E34' },
-  small_win: { band: '小赚', verb: '赚了', fill: '#F3F6DE', ink: '#3F6212' },
+  big_win: { band: '大赚', verb: '赚了', fill: '#E4F0EA', ink: '#2F5D50' },
+  small_win: { band: '小赚', verb: '赚了', fill: '#F3F6DE', ink: '#5C8F7A' },
   flat: { band: '持平', verb: '打平', fill: '#F5EDE0', ink: '#2B2B2B' },
-  small_loss: { band: '小亏', verb: '亏了', fill: '#F8E7C8', ink: '#8A4B16' },
-  big_loss: { band: '大亏', verb: '亏了', fill: '#F6D5CE', ink: '#8C2F2F' },
+  small_loss: { band: '小亏', verb: '亏了', fill: '#F8E7C8', ink: '#B85C38' },
+  big_loss: { band: '大亏', verb: '亏了', fill: '#F6D5CE', ink: '#8C3E2A' },
 };
 
 export const repayTones = {
-  can: { fill: '#E4F2DE', ink: '#1B5E34', bar: '#1B5E34' },
-  cannot: { fill: '#F6D5CE', ink: '#8C2F2F', bar: '#8C2F2F' },
+  can: { fill: '#E4F0EA', ink: '#2F5D50', bar: '#2F5D50' },
+  cannot: { fill: '#F8E7C8', ink: '#8C3E2A', bar: '#B85C38' },
   clear: { fill: '#F5EDE0', ink: '#2B2B2B', bar: '#C4A484' },
-  warning: { fill: '#F8E7C8', ink: '#8A4B16', bar: '#B85C38' },
-  success: { fill: '#E4F2DE', ink: '#1B5E34', bar: '#2F5D50' },
-  overdue: { fill: '#F6D5CE', ink: '#8C2F2F', bar: '#8C2F2F' },
-  seized: { fill: '#F5EDE0', ink: '#2B2B2B', bar: '#2F5D50' },
+  warning: { fill: '#F8E7C8', ink: '#8C3E2A', bar: '#B85C38' },
+  success: { fill: '#E4F0EA', ink: '#2F5D50', bar: '#2F5D50' },
+  overdue: { fill: '#F6D5CE', ink: '#8C3E2A', bar: '#B85C38' },
+  seized: { fill: '#F5EDE0', ink: '#2B2B2B', bar: '#B85C38' },
 };
 
 export const repayCopy = {
@@ -61,7 +63,7 @@ export const repayCopy = {
   warning: { chip: '临近收场', line: '再逾期一次就收场。收场后重新开张。' },
   success: { chip: '已还上', line: '这笔结了。下一期接着备。' },
   overdue: { chip: '没还上', line: '缺口已记下。先顾下一期。' },
-  seized: { chip: '重新开张', line: '铺子收过一次，可以再站起来。不是结束。' },
+  seized: { chip: '重新开张', line: '将重来，不是结束。' },
 };
 
 // 进阶成功只画一帧，不循环、不闪。之后留下门槛说明。

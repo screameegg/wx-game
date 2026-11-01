@@ -194,7 +194,7 @@ test('round 10 skin is presentational and keeps the frozen debt', async () => {
   assert.equal(economy.seizureOverdueCount, 3);
   assert.equal(economy.overduePenalty, 1.1);
   assert.equal(round10.round10DropRoot, '/workspace/falcon-art-round10');
-  assert.equal(round10.round10Art.useSheet, true);
+  assert.equal(round10.round10Art.useSheet, false);
   assert.equal(round10.advanceCelebrate.frames, 1);
   assert.equal(round10.advanceCelebrate.loop, false);
   assert.equal(round10.advanceCelebrate.flash, false);
@@ -203,11 +203,13 @@ test('round 10 skin is presentational and keeps the frozen debt', async () => {
   assert.equal(round10.advancePose(639).frame, 0);
   assert.equal(round10.advancePose(640).phase, 'tip');
   assert.deepEqual(round10.round10Slots.map((slot) => slot.file), [
-    'settlement_plate.png', 'repay_day_card.png', 'advance_tip.png',
+    'settle_screen_hierarchy.png', 'repay_day_cards.png', 'advance_touch_frame.png', 'repay_button_states.png',
   ]);
   round10.round10Slots.forEach((slot) => {
     assert.equal(slot.path, `assets/art/falcon-art-round10/${slot.file}`);
     assert.equal(slot.drop, `/workspace/falcon-art-round10/${slot.file}`);
+    assert.equal(slot.key, `round10:${Object.keys(round10.round10Files).find((key) => round10.round10Files[key] === slot.file)}`);
+    assert.ok(fs.statSync(slot.path).size > 1000, slot.path);
   });
   assert.equal(round10.reactionLine(''), '没多说');
   assert.doesNotThrow(() => new AuctionArt(() => {}));
@@ -287,9 +289,10 @@ test('round 10 skin is presentational and keeps the frozen debt', async () => {
   assert.ok(nextBox.w > gear.w);
   assert.ok(nextBox.x >= gear.x + gear.w);
 
-  view.art = { get(key) { return key === 'round10:settlement' ? { width: 20, height: 12 } : null; } };
+  view.art = { get(key) { return key === 'round10:settlement' ? { width: 720, height: 1280 } : null; } };
   show(view, ctx, () => settlement(view, ctx));
-  assert.equal(ctx.images.length > 0, true);
+  assert.equal(ctx.images.length, 0);
+  assert.ok(ctx.texts.includes(round10.settlementModel(bare.state).amount));
   assert.equal(ledger(bare.state), beforeSkin);
 
   const owed = playDebt(Game, 42);

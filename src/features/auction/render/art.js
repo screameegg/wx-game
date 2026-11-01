@@ -46,7 +46,7 @@ export default class AuctionArt {
       image.onerror = () => redraw();
       image.src = slot.path;
     });
-    // 结算铭牌、还款日卡、进阶提示。缺文件就留空，画面退回手绘框。
+    // 结算、还款日、进阶和还债按钮的对照板。带示例数字，不整张贴进画面。
     round10Slots.forEach((slot) => {
       const image = wx.createImage();
       image.onload = () => { this.images[slot.key] = image; redraw(); };

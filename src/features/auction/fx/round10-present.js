@@ -1,5 +1,5 @@
 // 第十轮只画铭牌、还款日卡和进阶提示。不读规则，不改金币和债务。
-// 参考图没到，或图片没有尺寸时，角落留空手绘框。
+// 对照板带示例数字。useSheet 关闭，或图片没有尺寸时，用手绘铭牌。
 
 import { plateType, reactionSlots, round10Art } from '../data/round10';
 
