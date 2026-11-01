@@ -1,3 +1,3 @@
-import Main from './js/main';
+import App from './src/app/index';
 
-new Main();
+new App();

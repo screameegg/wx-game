@@ -1,0 +1,89 @@
+集装箱寻宝素材包 · 命名对照
+包名: container_treasure_assets
+规则: 类型_对象_状态_主题.png | 全小写英文实义 | 禁中文文件名/空格/final2
+
+=== 目录 ===
+01_scene/   场景壳、进场、柜号
+02_ui/      竞拍与结算 UI
+03_char/    拍卖员、老周、阿岚
+04_item_band/   乐队箱拍卖可见
+05_item_photo/  摄影箱拍卖可见
+06_item_repair/ 维修箱拍卖可见
+07_reveal/      揭晓好/坏
+08_fx/          垫景特效
+09_icon/        品相图标等
+
+=== band 可见 ===
+item_bike_auction_band.png          自行车-胎没气车架直
+item_case_auction_band.png          乐器盒-扣锁好边磨
+item_sheetbox_auction_band.png      乐谱箱-外箱水渍
+item_cloth_auction_band.png         布遮箱-只见轮廓
+item_speaker_auction_band.png       音箱-网罩破洞
+item_micstand_auction_band.png      话筒架-杆子歪
+item_pedalbox_auction_band.png      效果器箱-贴纸多
+item_postertube_auction_band.png    海报筒-盖子在
+item_cablebag_auction_band.png      线材袋-拉链半开
+item_hanger_auction_band.png        衣架-演出服轮廓
+
+=== band 揭晓 ===
+reveal_bike_good_band.png / reveal_bike_bad_band.png
+reveal_guitar_good_band.png / reveal_guitar_bad_band.png
+reveal_sheets_good_band.png / reveal_sheets_bad_band.png
+reveal_stand_good_band.png / reveal_stand_bad_band.png
+reveal_speaker_good_band.png / reveal_speaker_bad_band.png
+reveal_mic_good_band.png / reveal_mic_bad_band.png
+reveal_pedal_good_band.png / reveal_pedal_bad_band.png
+reveal_poster_good_band.png / reveal_poster_bad_band.png
+
+=== photo 可见 ===
+item_camerabag_auction_photo.png
+item_tripod_auction_photo.png
+item_album_auction_photo.png
+item_lightstand_auction_photo.png
+item_reflector_auction_photo.png
+item_trunk_auction_photo.png
+item_lenstube_auction_photo.png
+item_cloth_auction_photo.png
+
+=== photo 揭晓 ===
+reveal_camera_good_photo.png / reveal_camera_bad_photo.png
+reveal_lens_good_photo.png / reveal_lens_bad_photo.png
+reveal_album_good_photo.png / reveal_album_bad_photo.png
+reveal_light_good_photo.png / reveal_light_bad_photo.png
+reveal_reflector_good_photo.png / reveal_reflector_bad_photo.png
+reveal_backdrop_good_photo.png / reveal_backdrop_bad_photo.png
+reveal_tripod_good_photo.png / reveal_tripod_bad_photo.png
+reveal_trunk_good_photo.png / reveal_trunk_bad_photo.png
+
+=== repair 可见 ===
+item_toolcabinet_auction_repair.png
+item_wallclock_auction_repair.png
+item_radio_auction_repair.png
+item_visebench_auction_repair.png
+item_oildrum_auction_repair.png
+item_partsdrawer_auction_repair.png
+item_repairbag_auction_repair.png
+item_nailedcrate_auction_repair.png
+
+=== repair 揭晓 ===
+reveal_wrenches_good_repair.png / reveal_wrenches_bad_repair.png
+reveal_clock_good_repair.png / reveal_clock_bad_repair.png
+reveal_radio_good_repair.png / reveal_radio_bad_repair.png
+reveal_vise_good_repair.png / reveal_vise_bad_repair.png
+reveal_drum_good_repair.png / reveal_drum_bad_repair.png
+reveal_parts_good_repair.png / reveal_parts_bad_repair.png
+reveal_bag_good_repair.png / reveal_bag_bad_repair.png
+reveal_crate_good_repair.png / reveal_crate_bad_repair.png
+
+=== UI 示例 ===
+ui_btn_bid.png / ui_btn_bid_pressed.png / ui_btn_bid_disabled.png
+ui_btn_pass.png
+ui_btn_sell.png / ui_btn_collect.png
+ui_frame_inspect_to_sell.png
+ui_board_settle.png
+ui_lot_plate_band01.png / ui_lot_plate_photo02.png / ui_lot_plate_repair03.png
+
+=== 角色示例 ===
+char_zhou_idle.png / char_zhou_bid.png / char_zhou_pass.png
+char_lan_idle.png / char_lan_bid.png / char_lan_pass.png
+char_auctioneer_idle.png / char_auctioneer_gavel.png

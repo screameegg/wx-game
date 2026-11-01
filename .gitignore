@@ -12,3 +12,15 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules/
+miniprogram_npm/
+
+# WeChat DevTools local configuration
+project.private.config.json
+
+# Generated previews and build output
+reports/
+dist/
+build/
+temp/
+library/
+*.log

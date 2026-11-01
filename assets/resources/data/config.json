@@ -1,0 +1,14 @@
+{
+  "initialCoins": 600, "openingPrice": 100, "bidStep": 20, "bidLimit": 8,
+  "debtEvery": 6, "firstDebt": 200, "debtGrowth": 1.1, "lateInterest": 0.2,
+  "recoveryThreshold": 100, "recoveryReward": 150, "seizureCoins": 300,
+  "advancedThreshold": 2000, "advancedMultiplier": 3,
+  "reactionDelay": 1400, "rivalBudgetMin": 250, "rivalBudgetMax": 450,
+  "rivalFollowChance": [0.85, 0.9],
+  "rivalPreference": [0.92, 1.08], "rivalDiscount": {"门缝": [0.8, 0.9], "半开": [0.85, 0.95], "全开": [0.9, 1.0]},
+  "rivalDiscountAdjustment": [-0.03, 0.02], "rivalEstimateVariation": 0.05, "bluffChance": 0.1,
+  "openings": ["门缝", "半开", "全开"], "visibilityByOpening": {"门缝": [3, 1, 1, 0, 0], "半开": [3, 1, 3, 1, 0], "全开": [3, 1, 3, 1, 1]},
+  "flashlightPrice": 150, "magnifierPrice": 250,
+  "resultRoiThresholds": [0.5, 1.0, 1.5], "equipmentUses": {"手电": 1, "放大镜": 1},
+  "ornamentProfit": [500, 1500, 5000]
+}

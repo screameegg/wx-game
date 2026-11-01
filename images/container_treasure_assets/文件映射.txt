@@ -1,0 +1,156 @@
+# container_treasure_assets 命名对照
+# 规则: 类型_对象_状态_主题.png | 全小写 | 下划线 | 英文实义
+# 目录: 01_scene 02_ui 03_char 04_item_band 05_item_photo 06_item_repair 07_reveal 08_fx 09_icon
+
+## scene/
+bg_port_auction.png	港口拍卖底图
+prop_container_closed.png	集装箱门关
+prop_container_open.png	集装箱门开
+prop_auction_desk.png	拍卖台
+scene_port_entrance.png	港口进场全景
+scene_container_id_closeup.png	货柜编号特写
+prop_sell_table.png	出售台
+prop_collection_shelf_empty.png	收藏柜空
+prop_collection_shelf_full.png	收藏柜有物
+fx_door_peek.png	门缝窥视层
+
+## ui/
+ui_coin.png	金币图标
+ui_balance_bar.png	余额条
+ui_bid_bar.png	出价条
+ui_btn_bid.png	加价+20默认
+ui_btn_bid_pressed.png	加价按下
+ui_btn_bid_disabled.png	加价禁用
+ui_btn_pass.png	放弃本箱
+ui_btn_pass_pressed.png	放弃按下
+ui_btn_pass_disabled.png	放弃禁用
+ui_gavel.png	落槌
+ui_leader_frame.png	领先高亮框
+ui_settle_board.png	结算板
+ui_recover_popup.png	整理旧物弹窗
+ui_inspect_frame.png	检查特写框
+ui_frame_inspect_to_sell.png	检查转出售一屏三段
+ui_sell_btn.png	出售按钮
+ui_sell_btn_pressed.png	出售按下
+ui_sell_btn_disabled.png	出售禁用
+ui_collect_btn.png	收藏按钮
+ui_collect_btn_pressed.png	收藏按下
+ui_collect_btn_disabled.png	收藏禁用
+ui_lot_plate_band.png	场次牌 BAND-01
+ui_lot_plate_photo.png	场次牌 PHOTO-02
+ui_lot_plate_repair.png	场次牌 REPAIR-03
+ui_icon_wet.png	品相-水渍
+ui_icon_rust.png	品相-锈
+ui_icon_missing.png	品相-缺件
+ui_icon_mold.png	品相-发霉
+ui_icon_blown.png	品相-炸泡
+ui_icon_torn.png	品相-撕裂
+
+## char/
+char_auctioneer_idle.png	拍卖员待机
+char_auctioneer_gavel.png	拍卖员落槌喊价
+char_zhou_idle.png	老周待机
+char_zhou_bid.png	老周出价
+char_zhou_pass.png	老周放弃
+char_zhou_tense.png	老周紧张
+char_lan_idle.png	阿岚待机
+char_lan_bid.png	阿岚出价
+char_lan_pass.png	阿岚放弃
+char_lan_tense.png	阿岚紧张
+
+## band item (04_item_band/)
+item_bike_auction_band.png	自行车-胎没气车架直
+item_case_auction_band.png	乐器盒-扣锁好边磨
+item_sheetbox_auction_band.png	乐谱箱-外箱水渍
+item_cloth_auction_band.png	布遮箱-只见轮廓
+item_speaker_auction_band.png	音箱-网罩破洞
+item_micstand_auction_band.png	话筒架-杆子歪
+item_pedalbox_auction_band.png	效果器箱-贴纸多
+item_postertube_auction_band.png	海报筒-盖子在
+item_cablebag_auction_band.png	线材袋-拉链半开
+item_hanger_auction_band.png	衣架-演出服轮廓
+item_cabledrum_auction_band.png	电缆盘-外表湿
+item_toolbag_auction_band.png	帆布工具袋-鼓囊囊
+
+## band reveal (07_reveal/)
+reveal_bike_good_band.png	换气嘴就能骑
+reveal_bike_bad_band.png	链条锈死要大修
+reveal_guitar_good_band.png	旧吉他品相在
+reveal_guitar_bad_band.png	只剩弦和拨片
+reveal_sheets_good_band.png	内层还干
+reveal_sheets_bad_band.png	页子粘砖
+reveal_stand_good_band.png	舞台支架能用
+reveal_stand_bad_band.png	支架缺螺丝
+reveal_speaker_good_band.png	音箱能出声
+reveal_speaker_bad_band.png	音圈烧了
+reveal_mic_good_band.png	麦头还在
+reveal_mic_bad_band.png	只有空架
+reveal_pedal_good_band.png	踏板齐
+reveal_pedal_bad_band.png	电路受潮
+reveal_poster_good_band.png	海报完好
+reveal_poster_bad_band.png	筒里进水糊了
+reveal_cable_good_band.png	线能用
+reveal_cable_bad_band.png	接头氧化
+reveal_jacket_good_band.png	夹克可收藏
+reveal_jacket_bad_band.png	只是衣架空挂
+
+## photo item (05_item_photo/)
+item_camera_bag_auction_photo.png	相机包-拉链完好
+item_tripod_auction_photo.png	三脚架-腿有划痕
+item_album_auction_photo.png	相册-封面磨
+item_lightstand_auction_photo.png	灯架-管柱直
+item_reflector_auction_photo.png	反光板-有折痕
+item_trunk_auction_photo.png	行李箱-锁在
+item_lenstube_auction_photo.png	镜头筒-盖子严
+item_cloth_auction_photo.png	布盖箱-只见轮廓
+
+## photo reveal
+reveal_camera_good_photo.png	机身能用
+reveal_camera_bad_photo.png	卡口锈死
+reveal_lens_good_photo.png	好镜头
+reveal_lens_bad_photo.png	空筒
+reveal_album_good_photo.png	内页完好
+reveal_album_bad_photo.png	受潮发黏
+reveal_light_good_photo.png	灯能亮
+reveal_light_bad_photo.png	泡炸了
+reveal_reflector_good_photo.png	反光板还能用
+reveal_reflector_bad_photo.png	撕裂
+reveal_backdrop_good_photo.png	布景齐全
+reveal_backdrop_bad_photo.png	发霉
+reveal_tripod_good_photo.png	锁扣稳
+reveal_tripod_bad_photo.png	关节松
+reveal_trunk_good_photo.png	布景齐全
+reveal_trunk_bad_photo.png	junk杂物
+
+## repair item (06_item_repair/)
+item_tool_cabinet_auction_repair.png	工具柜-抽屉半开
+item_wall_clock_auction_repair.png	挂钟-停走
+item_radio_auction_repair.png	收音机-外壳旧
+item_vise_bench_auction_repair.png	虎钳台-台面油渍
+item_oil_drum_auction_repair.png	油桶-桶身鼓
+item_parts_drawer_auction_repair.png	零件抽屉-标签模糊
+item_repair_bag_auction_repair.png	寄修袋-单据还在
+item_nailed_crate_auction_repair.png	封钉木箱-封钉完好
+
+## repair reveal
+reveal_wrenches_good_repair.png	扳手成套
+reveal_wrenches_bad_repair.png	锈缺
+reveal_clock_good_repair.png	钟可修
+reveal_clock_bad_repair.png	机芯废
+reveal_radio_good_repair.png	能响
+reveal_radio_bad_repair.png	哑巴
+reveal_vise_good_repair.png	虎钳好用
+reveal_vise_bad_repair.png	卡住
+reveal_drum_good_repair.png	密封
+reveal_drum_bad_repair.png	漏
+reveal_parts_good_repair.png	零件珍品
+reveal_parts_bad_repair.png	报废板
+reveal_bag_good_repair.png	寄修相机好物
+reveal_bag_bad_repair.png	坑人报废
+reveal_crate_good_repair.png	箱内工具
+reveal_crate_bad_repair.png	junk
+
+## fx 垫景示例
+fx_box_stack_band.png	乐队纸箱堆
+fx_paper_roll_photo.png	摄影背景纸卷
+fx_oil_can_repair.png	维修机油壶

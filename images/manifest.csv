@@ -1,0 +1,13 @@
+filename,folder,type,theme,state,cn_name,copy_key,hotspot,status
+item_bike_auction_band.png,04_item_band,item,band,auction,自行车没气,band_bike_flat,1,todo
+item_case_auction_band.png,04_item_band,item,band,auction,乐器盒,band_case,1,todo
+item_sheetbox_auction_band.png,04_item_band,item,band,auction,水渍乐谱箱,band_sheetbox,1,todo
+item_cloth_auction_band.png,04_item_band,item,band,auction,布遮箱,band_cloth,1,todo
+reveal_guitar_good_band.png,07_reveal,reveal,band,good,旧吉他完好,band_guitar_good,0,todo
+reveal_guitar_bad_band.png,07_reveal,reveal,band,bad,只剩弦拨片,band_guitar_bad,0,todo
+ui_btn_bid.png,02_ui,ui,common,normal,加价+20,ui_bid,0,todo
+ui_btn_bid_pressed.png,02_ui,ui,common,pressed,加价按下,ui_bid,0,todo
+ui_frame_inspect_to_sell.png,02_ui,ui,common,normal,检查到出售框,ui_inspect_sell,0,todo
+char_zhou_bid.png,03_char,char,common,bid,老周出价,char_zhou_bid,0,todo
+bg_port_auction.png,01_scene,scene,common,idle,港口拍卖底图,scene_port,0,todo
+fx_box_stack_repair.png,08_fx,fx,repair,idle,维修纸箱堆,fx_repair_boxes,0,todo

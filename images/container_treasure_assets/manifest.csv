@@ -1,0 +1,6 @@
+filename,folder,type,theme,state,cn_name,copy_key,hotspot,status
+item_bike_auction_band.png,04_item_band,item,band,auction,自行车没气,band_bike_flat,1,todo
+reveal_guitar_good_band.png,07_reveal,reveal,band,good,旧吉他完好,band_guitar_good,0,todo
+ui_btn_bid_pressed.png,02_ui,ui,common,pressed,加价按下,ui_bid,0,todo
+char_zhou_bid.png,03_char,char,common,bid,老周出价,char_zhou_bid,0,todo
+fx_box_stack_repair.png,08_fx,fx,repair,idle,纸箱堆垫景,fx_repair_boxes,0,todo
