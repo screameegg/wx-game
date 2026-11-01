@@ -86,6 +86,9 @@ test('round 8 paths match photo and repair art ids', async () => {
     assert.equal(row.silhouette, `assets/art/lots/${row.theme}/${row.artId}_silhouette.png`);
     assert.equal(row.dropFull, `/workspace/falcon-art-round8/${row.theme}/${row.artId}.png`);
     assert.equal(row.dropSilhouette, `/workspace/falcon-art-round8/${row.theme}/${row.artId}_silhouette.png`);
+    const front = fs.statSync(row.full);
+    assert.ok(front.size > 1000);
+    assert.equal(fs.existsSync(row.silhouette), false);
     const lot = lots.find((entry) => entry.theme === row.theme);
     const item = lot.items.find((entry) => entry.artId === row.artId);
     assert.equal(item.art, row.artKey);

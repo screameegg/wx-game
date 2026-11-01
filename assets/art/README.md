@@ -93,9 +93,11 @@ Older spec, same rules: `assets/art/ui/topbar-cta-spec.jpg`.
 
 Photo studio and repair-shop piece art. Path map: `src/features/auction/data/round8-art.js`. These pixels are presentation only. Bids, hammer price, debt, PnL, and inventory do not read them.
 
-Cartoon pieces, hand-drawn. Doorway (visibility 2) uses the full image. Silhouette and deep (visibility 1 and 0) use the outline. Reveal uses the full image. If a file is missing, observe and reveal keep the old atlas silhouette or the text label. Rare sparkle stays the single round-6 star (`spots: 1`, no loop).
+Cartoon pieces, hand-drawn. Doorway (visibility 2) and reveal use the full image. Silhouette and deep (visibility 1 and 0) use the outline. If that outline file is missing, observe and reveal keep the old atlas silhouette or the text label. Rare sparkle stays the single round-6 star (`spots: 1`, no loop).
 
-Drop folder until the files are copied in: `/workspace/falcon-art-round8/photo|repair/`. Repo slots (TODO, files not in tree yet):
+Fronts are in the repo. Silhouettes are not: do not invent `*_silhouette.png`. They stay pending from `/workspace/falcon-art-round8/photo|repair/`.
+
+Repo slots:
 
 - `camera_01` — `assets/art/lots/photo/camera_01.png` + `camera_01_silhouette.png` (lots art key `cameraBag`)
 - `tripod_01` — `assets/art/lots/photo/tripod_01.png` + `tripod_01_silhouette.png` (`tripod`)

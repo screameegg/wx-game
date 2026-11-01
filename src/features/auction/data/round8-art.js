@@ -1,6 +1,7 @@
 // 第八轮摄影工作室与旧维修铺单件图。只登记路径，不读价格。
-// 成图若先落在 /workspace/falcon-art-round8/，再抄进 assets/art/lots/。
-// 文件未到时观察和揭晓回退到原来的剪影或文字。稀有闪光仍只点一处。
+// 正面已在 assets/art/lots/<theme>/<artId>.png。
+// 剪影仍等 /workspace/falcon-art-round8/ 的 *_silhouette.png。缺文件时观察和揭晓回退到原来的剪影或文字。
+// 稀有闪光仍只点一处。
 
 export const round8DropRoot = '/workspace/falcon-art-round8';
 
@@ -29,12 +30,12 @@ function fileName(artId, silhouette) {
   return `${artId}${silhouette ? '_silhouette' : ''}.png`;
 }
 
-// TODO: 单件图未入库。路径先占好，加载失败就当文件不存在。
+// 正面文件已入库。剪影路径照旧，文件未到就当不存在。
 export function lotPiecePath(theme, artId, silhouette) {
   return `assets/art/lots/${theme}/${fileName(artId, silhouette)}`;
 }
 
-// TODO: 外部成图目录。进仓库前不参与画面，也不参与出价。
+// 剪影仍待外部目录。这里只登记，不生成文件。
 export function lotPieceDropPath(theme, artId, silhouette) {
   return `${round8DropRoot}/${theme}/${fileName(artId, silhouette)}`;
 }
