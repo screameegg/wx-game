@@ -23,21 +23,52 @@ export default class CanvasView {
     }
     if (line) this.text(ctx, line, x, y + row * 22, size);
   }
-  button(ctx, label, x, y, w, h, action, muted = false) {
-    panel(ctx, x, y, w, h, muted ? '#54736b' : palette.gold, 12);
-    ctx.textAlign = 'center'; ctx.font = `600 ${h < 40 ? 13 : 16}px sans-serif`; ctx.fillStyle = '#fffaf0';
-    ctx.fillText(label, x + w / 2, y + h / 2 + 6);
-    this.buttons.push({ x, y, w, h, action, label });
+  button(ctx, label, x, y, w, h, action, muted = false, extra) {
+    const opt = extra || {};
+    const disabled = !!opt.disabled;
+    const role = opt.role || '';
+    const confirm = opt.confirm || 'press';
+    const pressed = !!(role && this.pointer && this.pointer.down && !this.pointer.swallowed && this.pointer.role === role);
+    if (typeof opt.paint === 'function') opt.paint(ctx, { x, y, w, h, label, disabled, pressed, muted });
+    else {
+      panel(ctx, x, y, w, h, muted ? '#54736b' : palette.gold, 12);
+      ctx.textAlign = 'center'; ctx.font = `600 ${h < 40 ? 13 : 16}px sans-serif`; ctx.fillStyle = '#fffaf0';
+      ctx.fillText(label, x + w / 2, y + h / 2 + 6);
+      ctx.textAlign = 'left';
+    }
+    this.buttons.push({ x, y, w, h, action, label, role, disabled, confirm });
   }
   link(ctx, label, x, y, w, action) {
     this.text(ctx, label, x, y + 23, 13, palette.muted);
     this.buttons.push({ x, y, w, h: 36, action, label });
   }
-  touch(x, y) {
-    x = (x - this.offsetX) / this.scale; y = (y - this.offsetY) / this.scale;
-    const hit = this.buttons.slice().reverse().find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
-    if (hit) hit.action();
+  localPoint(x, y) {
+    return { x: (x - this.offsetX) / this.scale, y: (y - this.offsetY) / this.scale };
   }
+  pick(x, y) {
+    const p = this.localPoint(x, y);
+    return this.buttons.slice().reverse().find((b) => p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) || null;
+  }
+  // 加价键按下只记状态，松手才执行。禁用键吃掉点击，不再往下传。
+  pointerDown(x, y) {
+    const hit = this.pick(x, y);
+    if (!hit) { this.pointer = null; return false; }
+    if (hit.disabled) { this.pointer = { down: true, swallowed: true, role: hit.role || '' }; return false; }
+    if (hit.confirm === 'release') { this.pointer = { down: true, swallowed: false, role: hit.role || '' }; return false; }
+    this.pointer = null;
+    hit.action();
+    return true;
+  }
+  pointerUp(x, y) {
+    const pointer = this.pointer;
+    this.pointer = null;
+    if (!pointer || pointer.swallowed || !pointer.role) return false;
+    const hit = this.pick(x, y);
+    if (!hit || hit.disabled || hit.confirm !== 'release' || hit.role !== pointer.role) return false;
+    hit.action();
+    return true;
+  }
+  touch(x, y) { return this.pointerDown(x, y); }
   prepare(ctx) {
     this.buttons = []; ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = palette.bg; ctx.fillRect(0, 0, this.screen.width, this.screen.height);

@@ -59,3 +59,12 @@ Observe-tier guides only. In-game strokes and hotspots are drawn from `src/featu
 - `assets/art/falcon-art-round4/observe_hotzone_rules.png` — clear / silhouette / deep outlines; minimum touch target 44px
 
 TODO: if painted per-item outlines arrive, point `observeArt` at them and swap the stroke helper. Do not feed those pixels into bids.
+
+# Falcon art round 5
+
+Auction-beat reference boards. Timings live in `src/features/auction/data/round5.js`. None of these pixels enter bids.
+
+- `assets/art/falcon-art-round5/bid_button_states.png` — raise button default / pressed / disabled. The live control is drawn from `raiseButtonBeat` fills because this sheet includes captions. TODO: swap in a caption-free 3-state slice and set `useSheet`.
+- `assets/art/falcon-art-round5/leader_highlight.png` — crown study. In game the crown stays off (`showCrown: false`); the screen uses a soft glow plus the 「领先」 label.
+- `assets/art/falcon-art-round5/pass_wave_frames.png` — abandon wave, three frames, held 1–2s. Crops: `expressionBeat.waveCrops`.
+- `assets/art/falcon-art-round5/gavel_pause_compare.png` — pre-hammer pause versus after the strike. Reference only; the 0.4–0.6s hold is drawn in code (scale + vignette) and does not show item grades.

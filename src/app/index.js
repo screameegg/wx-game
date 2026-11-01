@@ -11,16 +11,22 @@ export default class App {
     this.screen = createScreen(); this.game = new Game(); this.effects = new Effects();
     this.animationId = null; this.reactionTimer = null; this.hidden = false; this.lastFrame = 0;
     this.scene = new GameScene(this.screen, this.game, () => this.render());
-    wx.onTouchStart((event) => this.onTouch(event));
+    wx.onTouchStart((event) => this.onPointer('down', event));
+    if (typeof wx.onTouchEnd === 'function') wx.onTouchEnd((event) => this.onPointer('up', event));
+    if (typeof wx.onTouchCancel === 'function') wx.onTouchCancel(() => this.onPointer('cancel', {}));
     if (wx.onHide) wx.onHide(() => { this.hidden = true; this.game.save(); this.render(); });
     if (wx.onShow) wx.onShow(() => { this.hidden = false; this.render(); });
     this.render();
   }
-  onTouch(event) {
-    const touch = event.touches && event.touches[0]; if (!touch || this.hidden) return;
+  onPointer(kind, event) {
+    const pool = kind === 'down' ? event.touches : (event.changedTouches || event.touches);
+    const touch = pool && pool[0];
+    if (this.hidden || (kind !== 'cancel' && !touch)) return;
     const s = this.game.state;
     const before = { phase: s.phase, selected: s.selected, income: s.income, pending: s.pending, collected: s.collection.length, ornament: s.ornament, remaining: auctionsRemaining(s), evidence: (s.items || []).map((item) => [item.categoryKnown, item.conditionKnown]), statuses: (s.items || []).map((item) => item.status) };
-    this.scene.touch(touch.clientX, touch.clientY);
+    if (kind === 'down') this.scene.pointerDown(touch.clientX, touch.clientY);
+    else if (kind === 'cancel') this.scene.pointer = null;
+    else this.scene.pointerUp(touch.clientX, touch.clientY);
     const state = this.game.state;
     this.playCue(cueFromTouch(before, state, { reviewing: this.scene.reviewing }));
     extraCues(before, state).forEach((beat) => this.playCue(beat));
@@ -29,8 +35,12 @@ export default class App {
   playCue(beat) {
     if (!beat) return;
     this.scene.playEffect(beat.kind, beat.detail || {});
-    const gate = { soundEnabled: this.game.state.soundEnabled, paused: !!this.scene.menu.view, hidden: this.hidden };
-    if (audible(beat, gate)) this.effects.play(beat.sound, true, beat.detail && beat.detail.sfxFile);
+    const gate = () => ({ soundEnabled: this.game.state.soundEnabled, paused: !!this.scene.menu.view, hidden: this.hidden });
+    if (!audible(beat, gate())) return;
+    const wait = beat.kind === 'hammer' && this.scene.effect ? Math.max(0, this.scene.effect.at - Date.now()) : 0;
+    const play = () => { if (audible(beat, gate())) this.effects.play(beat.sound, true, beat.detail && beat.detail.sfxFile); };
+    if (wait > 0) setTimeout(play, wait);
+    else play();
   }
   animate() {
     if (this.animationId !== null || this.hidden) return;

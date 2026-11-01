@@ -1,5 +1,6 @@
 import { bandItemIds, bandPieceKey, bandPiecePath, round1Art } from '../data/round1-art';
 import { round3Art } from '../data/round3';
+import { round5Art } from '../data/round5';
 
 const root = 'assets/resources/art';
 const files = { harbor: 'container', zhouSheet: 'rivals', lanSheet: 'rivals', itemSheet: 'cargo', resultSheet: 'cargo', extraSheet: 'photo-repair' };
@@ -28,6 +29,11 @@ export default class AuctionArt {
       image.onerror = () => redraw();
       image.src = src;
     });
+    // 放弃摆手用切片。按钮、领先和落槌规格板只作参考，不整张贴进画面。
+    const wave = wx.createImage();
+    wave.onload = () => { this.images.passWave = wave; redraw(); };
+    wave.onerror = () => redraw();
+    wave.src = round5Art.passWave;
   }
   get(key) { return this.images[key === 'container' ? 'harbor' : key]; }
 }
