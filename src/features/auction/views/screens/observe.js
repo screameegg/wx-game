@@ -2,6 +2,7 @@ import { steps, heading } from '../shared/chrome';
 import { drawCargo } from '../../render/cargo';
 import { palette, panel } from '../../render/ui';
 import { economy } from '../../data/economy';
+import { infoCardBox } from '../../data/round3';
 export function observe(scene, ctx) {
   const reviewing = scene.reviewing; steps(scene, ctx, 0);
 
@@ -63,7 +64,7 @@ function drawToolCard(scene, ctx, name, x, width) {
 
 function drawDetails(scene, ctx, reviewing) {
   const s = scene.game.state; const index = s.selected;
-  panel(ctx, 18, 404, 339, 101, palette.panel, 12);
+  panel(ctx, infoCardBox.x, infoCardBox.y, infoCardBox.w, infoCardBox.h, palette.panel, 12);
 
   if (index < 0) {
     scene.text(ctx, '拍卖员 · 箱子来历', 24, 426, 12, palette.gold);

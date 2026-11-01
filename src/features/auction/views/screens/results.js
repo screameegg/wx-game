@@ -2,6 +2,7 @@ import { divider, palette, panel } from '../../render/ui';
 import { drawPlayerPaddle } from '../people/actors';
 import { drawExpression, settlementExpression } from '../people/expressions';
 import { judgeLine } from '../../data/lines';
+import { watchUnlockPose } from '../../fx/watch-unlock';
 
 export function settlement(scene, ctx) {
   const s = scene.game.state; const net = s.income - s.spent;
@@ -26,7 +27,10 @@ export function settlement(scene, ctx) {
   scene.text(ctx, zhou.label, 28, quoteY + 18, 12, palette.gold);
   scene.text(ctx, `阿岚：${judgeLine(roi, '阿岚')}`, 220, quoteY, 12);
   scene.text(ctx, lan.label, 220, quoteY + 18, 12, palette.gold);
-  drawPlayerPaddle(ctx, 156, quoteY + 28, 52, 78, s.ornament);
+  const unlock = scene.watchUnlock;
+  const wristPose = watchUnlockPose(unlock ? Date.now() - unlock.at : Infinity);
+  if (unlock) unlock.phase = wristPose.phase;
+  drawPlayerPaddle(ctx, 156, quoteY + 28, 52, 78, s.ornament, unlock && wristPose.phase !== 'done' ? { ...wristPose, image: scene.art && scene.art.get('watchUnlock') } : null);
   if (s.ornamentNotice) scene.text(ctx, s.ornamentNotice, 24, quoteY + 112, 12, palette.gold);
   scene.link(ctx, '查看每件物品，复盘线索', 24, scene.height - 118, 280, () => { scene.menu.view = 'ledger'; });
   scene.button(ctx, '设备', 24, scene.height - 68, 105, 48, () => { scene.menu.view = 'shop'; }, true);
