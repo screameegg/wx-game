@@ -27,11 +27,11 @@ export const lots = [
     '这些器材在室内工作室用过，包和支架都有磨损，镜头情况未知。',
     '箱主说相册和布景都还在，至于摄影器材能不能正常工作，没人打包票。',
   ], items: [
-    { clue: '相机包', hint: '包身磨损，拉链完好，看不见内部。', art: 'cameraBag', good: ['旧相机', '相机工作正常。', 300], bad: ['相机配件', '只有旧电池和线材。', 35], collectible: true },
-    { clue: '三脚架', hint: '外观完整，锁扣是否牢固未知。', art: 'tripod', good: ['三脚架', '锁扣牢固。', 100], bad: ['三脚架', '一个锁扣损坏。', 35] },
-    { clue: '相册', hint: '封面有划痕，内页未检查。', art: 'album', good: ['旧相册', '内页保存整齐。', 80], bad: ['旧相册', '内页受潮。', 20] },
-    { clue: '遮布箱', hint: '箱子轮廓可见，内容未知。', art: 'cloth', good: ['摄影灯', '灯具完整。', 150], bad: ['旧布景', '普通布景，有使用痕迹。', 45] },
-    { clue: '长筒形盒', hint: '长筒包装，封口有磨损，内部未经检查。', art: 'crate', good: ['布景支撑杆', '零件齐全，可继续使用。', 65], bad: ['旧背景纸', '纸面有折痕，只能裁切利用。', 15] },
+    { clue: '相机包', hint: '包身磨损，拉链完好，看不见内部。', art: 'cameraBag', artId: 'camera_01', good: ['旧相机', '相机工作正常。', 300], bad: ['相机配件', '只有旧电池和线材。', 35], collectible: true },
+    { clue: '三脚架', hint: '外观完整，锁扣是否牢固未知。', art: 'tripod', artId: 'tripod_01', good: ['三脚架', '锁扣牢固。', 100], bad: ['三脚架', '一个锁扣损坏。', 35] },
+    { clue: '相册', hint: '封面有划痕，内页未检查。', art: 'album', artId: 'album_01', good: ['旧相册', '内页保存整齐。', 80], bad: ['旧相册', '内页受潮。', 20] },
+    { clue: '遮布箱', hint: '箱子轮廓可见，内容未知。', art: 'cloth', artId: 'softbox_01', good: ['摄影灯', '灯具完整。', 150], bad: ['旧布景', '普通布景，有使用痕迹。', 45] },
+    { clue: '长筒形盒', hint: '长筒包装，封口有磨损，内部未经检查。', art: 'crate', artId: 'backdrop_tube_01', good: ['布景支撑杆', '零件齐全，可继续使用。', 65], bad: ['旧背景纸', '纸面有折痕，只能裁切利用。', 15] },
   ],
   bonusPool: [
     { name: '旧底片盒', description: '几卷没冲洗的黑白底片，年代久远，有收藏价值。', minVal: 20, maxVal: 40, collectible: true },
@@ -47,11 +47,11 @@ export const lots = [
     '老师傅留下了钟表和收音机，但没有记录哪些修好、哪些还要返工。',
     '这批东西外壳都旧了，开机、走时和零件数量都得自己判断。',
   ], items: [
-    { clue: '工具柜', hint: '柜门能关上，内部工具数量未知。', art: 'repairCabinet', good: ['扳手套装', '工具齐全。', 210], bad: ['旧工具', '部分工具缺失。', 65] },
-    { clue: '挂钟', hint: '表盘完整，走时情况未知。', art: 'repairClock', good: ['机械挂钟', '走时正常。', 190], bad: ['坏挂钟', '机芯需要维修。', 35], collectible: true },
-    { clue: '收音机', hint: '外壳有划痕，能否工作未知。', art: 'repairRadio', good: ['老收音机', '可以正常收听。', 160], bad: ['坏收音机', '无法开机。', 30] },
-    { clue: '零件抽屉', hint: '抽屉里有东西，具体数量未知。', art: 'repairParts', good: ['维修零件', '常用零件保存完好。', 100], bad: ['旧零件', '多数零件已生锈。', 40] },
-    { clue: '封钉木箱', hint: '木箱封钉完好，里面装着什么尚不清楚。', art: 'repairCrate', good: ['箱装工具', '工具完整，仍可使用。', 140], bad: ['旧杂物', '箱内只有一些旧杂物。', 25] },
+    { clue: '工具柜', hint: '柜门能关上，内部工具数量未知。', art: 'repairCabinet', artId: 'cabinet_01', good: ['扳手套装', '工具齐全。', 210], bad: ['旧工具', '部分工具缺失。', 65] },
+    { clue: '挂钟', hint: '表盘完整，走时情况未知。', art: 'repairClock', artId: 'clock_01', good: ['机械挂钟', '走时正常。', 190], bad: ['坏挂钟', '机芯需要维修。', 35], collectible: true },
+    { clue: '收音机', hint: '外壳有划痕，能否工作未知。', art: 'repairRadio', artId: 'radio_01', good: ['老收音机', '可以正常收听。', 160], bad: ['坏收音机', '无法开机。', 30] },
+    { clue: '零件抽屉', hint: '抽屉里有东西，具体数量未知。', art: 'repairParts', artId: 'parts_01', good: ['维修零件', '常用零件保存完好。', 100], bad: ['旧零件', '多数零件已生锈。', 40] },
+    { clue: '封钉木箱', hint: '木箱封钉完好，里面装着什么尚不清楚。', art: 'repairCrate', artId: 'crate_01', good: ['箱装工具', '工具完整，仍可使用。', 140], bad: ['旧杂物', '箱内只有一些旧杂物。', 25] },
   ],
   bonusPool: [
     { name: '旧徽章', description: '一枚铜质工匠协会徽章，年代不详，有收藏价值。', minVal: 18, maxVal: 35, collectible: true },

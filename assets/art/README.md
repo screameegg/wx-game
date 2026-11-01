@@ -88,3 +88,24 @@ Top bar and primary CTA reference boards. Layout, colors, and the debt-strip sen
 Palette used by the chrome and the primary button only: `#2F5D50` `#E8A54B` `#C4A484` `#F5EDE0` `#2B2B2B` `#B85C38`.
 
 Older spec, same rules: `assets/art/ui/topbar-cta-spec.jpg`.
+
+# Falcon art round 8
+
+Photo studio and repair-shop piece art. Path map: `src/features/auction/data/round8-art.js`. These pixels are presentation only. Bids, hammer price, debt, PnL, and inventory do not read them.
+
+Cartoon pieces, hand-drawn. Doorway (visibility 2) and reveal use the full image. Silhouette and deep (visibility 1 and 0) use the outline. Fronts and silhouettes are both in `assets/art/lots/photo|repair/`. If a file fails to load, observe and reveal keep the old atlas silhouette or the text label. Rare sparkle stays the single round-6 star (`spots: 1`, no loop).
+
+Repo slots:
+
+- `camera_01` — `assets/art/lots/photo/camera_01.png` + `camera_01_silhouette.png` (lots art key `cameraBag`)
+- `tripod_01` — `assets/art/lots/photo/tripod_01.png` + `tripod_01_silhouette.png` (`tripod`)
+- `album_01` — `assets/art/lots/photo/album_01.png` + `album_01_silhouette.png` (`album`)
+- `softbox_01` — `assets/art/lots/photo/softbox_01.png` + `softbox_01_silhouette.png` (`cloth`)
+- `backdrop_tube_01` — `assets/art/lots/photo/backdrop_tube_01.png` + `backdrop_tube_01_silhouette.png` (`crate`)
+- `cabinet_01` — `assets/art/lots/repair/cabinet_01.png` + `cabinet_01_silhouette.png` (`repairCabinet`)
+- `clock_01` — `assets/art/lots/repair/clock_01.png` + `clock_01_silhouette.png` (`repairClock`)
+- `radio_01` — `assets/art/lots/repair/radio_01.png` + `radio_01_silhouette.png` (`repairRadio`)
+- `parts_01` — `assets/art/lots/repair/parts_01.png` + `parts_01_silhouette.png` (`repairParts`)
+- `crate_01` — `assets/art/lots/repair/crate_01.png` + `crate_01_silhouette.png` (`repairCrate`)
+
+Outline and silhouette share the `_silhouette.png` slot, same as the band pieces.
