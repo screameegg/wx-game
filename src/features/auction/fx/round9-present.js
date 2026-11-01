@@ -35,8 +35,8 @@ function paintImage(ctx, image, box) {
 }
 
 export function drawCellPlate(scene, ctx, box, found) {
-  const key = found ? 'round9:cellCollected' : 'round9:cellEmpty';
-  const image = sheetImage(scene, key);
+  // 一张对照板同时画了空格和已收集，还带色值。不能裁进单个格子。
+  const image = sheetImage(scene, 'round9:cellSpec');
   if (image && paintImage(ctx, image, box)) return;
   ctx.save();
   ctx.fillStyle = found ? plateFill.collected : plateFill.empty;
@@ -74,10 +74,10 @@ export function drawRareBadge(scene, ctx, box) {
   const image = sheetImage(scene, 'round9:rareBadge');
   if (image && paintImage(ctx, image, box)) return;
   ctx.save();
-  ctx.fillStyle = plateFill.badge;
-  roundPath(ctx, box.x, box.y, box.w, box.h, box.h / 2);
+  ctx.fillStyle = plateFill.ribbon;
+  roundPath(ctx, box.x, box.y, box.w, box.h, 4);
   ctx.fill();
-  ctx.fillStyle = plateFill.badgeInk;
+  ctx.fillStyle = plateFill.ribbonInk;
   ctx.font = '700 12px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -108,7 +108,7 @@ export function drawPaneTab(ctx, box, active) {
   ctx.lineWidth = 1.5;
   roundPath(ctx, box.x, box.y, box.w, box.h, box.h / 2);
   ctx.stroke();
-  ctx.fillStyle = active ? plateFill.badgeInk : plateFill.ink;
+  ctx.fillStyle = plateFill.ink;
   ctx.font = '700 14px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';

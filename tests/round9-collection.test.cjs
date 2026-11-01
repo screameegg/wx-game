@@ -86,7 +86,7 @@ test('round 9 paths, badge, and layout stay presentational', async () => {
   assert.equal(round9.rareBadgeSpec.corner, 'top-right');
   assert.equal(round9.rareBadgeSpec.label, '珍品');
   assert.equal(round9.cellTokens.margin, 16);
-  assert.equal(round9.cellTokens.gap, 12);
+  assert.equal(round9.cellTokens.gap, 16);
   assert.ok(round9.cellTokens.height >= 44);
   assert.ok(round9.warehouseTokens.rowH >= 44);
 
@@ -94,10 +94,11 @@ test('round 9 paths, badge, and layout stay presentational', async () => {
     assert.equal(slot.path, `assets/art/falcon-art-round9/${slot.file}`);
     assert.equal(slot.drop, `/workspace/falcon-art-round9/${slot.file}`);
     assert.equal(slot.key, `round9:${Object.keys(round9.round9Files).find((key) => round9.round9Files[key] === slot.file)}`);
+    assert.ok(fs.statSync(slot.path).size > 1000);
   });
   assert.deepEqual(round9.round9Slots.map((slot) => slot.file), [
-    'cell_plate_empty.png', 'cell_plate_collected.png', 'rare_badge.png',
-    'warehouse_row.png', 'empty_collection.png', 'empty_warehouse.png',
+    'collection_grid_spec.png', 'rare_corner_badge.png', 'warehouse_list_mock.png',
+    'empty_collection_state.png', 'empty_warehouse_state.png',
   ]);
 
   const names = round9.collectTreasureNames(lots);
@@ -132,7 +133,7 @@ test('round 9 paths, badge, and layout stay presentational', async () => {
   assert.equal(cell.x, 16);
   assert.equal(cell.w, 343);
   assert.equal(cell.h, 112);
-  assert.equal(next.y - (cell.y + cell.h), 12);
+  assert.equal(next.y - (cell.y + cell.h), 16);
   assert.equal(badge.y, cell.y + 8);
   assert.equal(badge.x + badge.w, cell.x + cell.w - 8);
   assert.ok(badge.x >= thumb.x + thumb.w);
@@ -286,7 +287,7 @@ test('collection cells, badge, warehouse rows, and empty states', async () => {
 
   const art = new AuctionArt(() => {});
   assert.equal(art.get('round9:rareBadge'), undefined);
-  assert.equal(art.get('round9:cellEmpty'), undefined);
+  assert.equal(art.get('round9:cellSpec'), undefined);
   const fallback = render(blankState(), { view: 'collection', collectionPane: 'atlas', collectionTheme: '' }, art);
   assert.ok(fallback.ctx.texts.join('').includes(emptyCopy.collection));
 });

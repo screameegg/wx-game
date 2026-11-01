@@ -1,19 +1,18 @@
 // 第九轮收藏格和仓库列表。只放间距、角标和参考图路径。
 // 件数、金币和债务仍以存档为准。这里不改数组，也不读本场成交价。
-// 参考板可能带说明文字，useSheet 关掉，画面用下面的尺寸自己画。
-// TODO: 无字切片到位后，把 useSheet 打开，只替换底板和角标。
+// 对照板带标题和色值，不能整张贴进画面。useSheet 关掉，格子和角标按下面的尺寸画。
+// TODO: 若以后给到无字的空格、已收集、角标和仓库行切片，再把 useSheet 打开。
 
 import { layoutTokens } from './round7';
 
 export const round9DropRoot = '/workspace/falcon-art-round9';
 
 export const round9Files = {
-  cellEmpty: 'cell_plate_empty.png',
-  cellCollected: 'cell_plate_collected.png',
-  rareBadge: 'rare_badge.png',
-  warehouseRow: 'warehouse_row.png',
-  emptyCollection: 'empty_collection.png',
-  emptyWarehouse: 'empty_warehouse.png',
+  cellSpec: 'collection_grid_spec.png',
+  rareBadge: 'rare_corner_badge.png',
+  warehouseRow: 'warehouse_list_mock.png',
+  emptyCollection: 'empty_collection_state.png',
+  emptyWarehouse: 'empty_warehouse_state.png',
 };
 
 export function round9RepoPath(file) {
@@ -25,8 +24,7 @@ export function round9DropPath(file) {
 }
 
 export const round9Art = {
-  cellEmpty: round9RepoPath(round9Files.cellEmpty),
-  cellCollected: round9RepoPath(round9Files.cellCollected),
+  cellSpec: round9RepoPath(round9Files.cellSpec),
   rareBadge: round9RepoPath(round9Files.rareBadge),
   warehouseRow: round9RepoPath(round9Files.warehouseRow),
   emptyCollection: round9RepoPath(round9Files.emptyCollection),
@@ -45,7 +43,7 @@ export const cellTokens = {
   margin: layoutTokens.margin,
   width: layoutTokens.designWidth - layoutTokens.margin * 2,
   height: 112,
-  gap: 12,
+  gap: 16,
   radius: 14,
   thumb: 72,
   thumbInset: 16,
@@ -88,18 +86,19 @@ export const rareBadgeSpec = {
 
 export const plateFill = {
   collected: '#F5EDE0',
-  empty: '#E6DDD0',
+  empty: '#F5EDE0',
   line: '#C4A484',
   ink: '#2B2B2B',
   muted: '#8A8175',
   badge: '#E8A54B',
-  badgeInk: '#2B2B2B',
+  ribbon: '#B85C38',
+  ribbonInk: '#F5EDE0',
   accent: '#2F5D50',
 };
 
 export const emptyCopy = {
-  collection: '还没有收藏。拍下好货后可以选择收下。',
-  warehouse: '仓库还是空的。收下的物件会列在这里，只能查看。',
+  collection: '暂无收藏',
+  warehouse: '仓库空空，暂无物品',
 };
 
 // 展示用的珍品下限，对应图鉴里已经写好的好品售价。不写回货单，也不参与结算。

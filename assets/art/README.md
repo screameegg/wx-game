@@ -114,11 +114,12 @@ Outline and silhouette share the `_silhouette.png` slot, same as the band pieces
 
 Collection cells, the treasure badge, and the warehouse list. Paths live in `src/features/auction/data/round9.js`. These boards are presentation only. Hammer price, PnL, collection contents, warehouse counts, coins, and debt do not read them.
 
-The sheets may include captions, so nothing here is pasted into the screen (`useSheet: false`). Live plates, the corner badge, warehouse rows, and empty states are drawn from the layout tokens. If a file is missing, the screen keeps the vector placeholder. The treasure badge sits in the top-right corner, one frame, no loop and no flash. Drop folder, same file names: `/workspace/falcon-art-round9/`.
+The sheets include captions and color chips, so nothing here is pasted into the screen (`useSheet: false`). Live plates, the corner badge, warehouse rows, and empty states are drawn from the layout tokens. If a file fails to load, the screen keeps the vector placeholder. The treasure mark sits in the top-right corner, one frame, no loop and no flash. Drop folder, same file names: `/workspace/falcon-art-round9/`.
 
-- `cell_plate_empty.png` — empty collection cell (not yet collected)
-- `cell_plate_collected.png` — collected cell plate
-- `rare_badge.png` — treasure corner badge 「珍品」
-- `warehouse_row.png` — warehouse row (thumb, name, short status)
-- `empty_collection.png` — optional empty-collection illustration
-- `empty_warehouse.png` — optional empty-warehouse illustration
+Palette on the boards: `#2F5D50` `#E8A54B` `#C4A484` `#F5EDE0` `#2B2B2B` `#B85C38`.
+
+- `collection_grid_spec.png` — empty dashed plate versus collected plate, shared corner radius, gap and margin about 16
+- `rare_corner_badge.png` — ordinary item with no badge versus a static 「珍品」 ribbon at the top-right
+- `warehouse_list_mock.png` — warehouse rows: thumbnail, name, short status; one amber primary
+- `empty_collection_state.png` — optional empty-collection reference, titled 「暂无收藏」
+- `empty_warehouse_state.png` — optional empty-warehouse reference, titled 「仓库空空 / 暂无物品」

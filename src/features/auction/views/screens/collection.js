@@ -144,7 +144,7 @@ function paintWarehouse(scene, ctx) {
   const entries = catalogEntries(s);
   const stacks = warehouseStacks(s);
   const pledged = !!(s.pledged && s.pledged.type === 'collection');
-  scene.text(ctx, '仓库', cellTokens.margin, collectionChrome.titleY, 25);
+  scene.text(ctx, '我的仓库', cellTokens.margin, collectionChrome.titleY, 25);
   paintTabs(scene, ctx);
   const summary = pledged ? `在库 ${(s.collection || []).length} 件 · 另有抵押` : `在库 ${(s.collection || []).length} 件`;
   scene.text(ctx, summary, cellTokens.margin, collectionChrome.summaryY, 14, palette.muted);
@@ -170,6 +170,9 @@ function paintWarehouseRow(scene, ctx, entries, row, index) {
   drawWarehouseRow(scene, ctx, box);
   drawThumbWell(ctx, well, true);
   catalogSprite(scene, ctx, row.name, well);
+  if (treasures.has(row.name)) {
+    drawRareBadge(scene, ctx, { x: well.x + well.w - 28, y: well.y - 4, w: 36, h: 16 });
+  }
   scene.paragraph(ctx, row.name, text.x, text.nameY, text.w, 16, 1);
   scene.text(ctx, warehouseStatusLine(row), text.x, text.statusY, 12, palette.muted);
   const countLabel = row.count ? `${row.count} 件` : '抵押';
