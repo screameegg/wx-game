@@ -1,6 +1,7 @@
 import { steps } from '../shared/chrome';
 import { cargoSprite, catalogSprite } from '../../render/sprites';
-import { effectProgress, easeOut } from '../../render/motion';
+import { effectProgress } from '../../render/motion';
+import { flipPose, withFlip } from '../../fx/beats';
 import { palette, divider, panel } from '../../render/ui';
 import { cargoLayout } from '../../render/cargo';
 
@@ -83,24 +84,29 @@ function drawRevealCargo(scene, ctx, s) {
   });
 }
 
-// 已揭晓物品：大图弹出弹层 + 名称/品相/价格/操作
+// 已揭晓物品：先翻开背面，再换成真物；翻完才给出售/收藏。
 function drawRevealFocused(scene, ctx, item, s) {
-  const t = easeOut(effectProgress(scene, 'reveal'));
+  const pose = flipPose(effectProgress(scene, 'reveal'));
+  if (scene.effect && scene.effect.kind === 'reveal') scene.effect.phase = pose.phase;
   const index = s.selected;
-  const iw = 208 * (0.7 + 0.3 * t); const ih = 188 * (0.7 + 0.3 * t);
+  const iw = 208; const ih = 188;
 
-  // 大奖金光效果（S08：单件价值很高时）
-  if (item.isBigWin && t > 0.55) {
-    ctx.save(); ctx.globalAlpha = Math.min(0.5, (t - 0.55) / 0.45 * 0.5);
+  if (item.isBigWin && pose.showFront && pose.scaleX > 0.72) {
+    ctx.save(); ctx.globalAlpha = 0.28 + pose.scaleX * 0.22;
     ctx.fillStyle = '#f2cc50';
     ctx.beginPath(); ctx.arc(188, 265, 115, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
 
-  if (item.isBonus) {
-    catalogSprite(scene, ctx, item.result[0], { x: 88, y: 190, w: 200, h: 150 });
-  } else {
-    cargoSprite(scene, ctx, index, { x: 188 - iw / 2, y: 265 - ih / 2, w: iw, h: ih }, true);
+  withFlip(ctx, 188, 265, pose, () => {
+    const box = { x: -iw / 2, y: -ih / 2, w: iw, h: ih };
+    if (!pose.showFront) drawRevealBack(scene, ctx, item, index, box);
+    else if (item.isBonus) catalogSprite(scene, ctx, item.result[0], box);
+    else cargoSprite(scene, ctx, index, box, true);
+  });
+  if (!(pose.showFront && pose.scaleX > 0.82)) {
+    scene.text(ctx, '翻开…', 156, 390, 16, palette.gold);
+    return;
   }
 
   // 信息面板
@@ -125,5 +131,30 @@ function drawRevealFocused(scene, ctx, item, s) {
     scene.button(ctx, `出售 +${item.result[2]}`, 174, scene.height - 68, 177, 48, () => scene.game.handle('sell'));
   } else {
     scene.button(ctx, `出售，获得 ${item.result[2]} 金币`, 24, scene.height - 68, 327, 48, () => scene.game.handle('sell'));
+  }
+}
+
+function drawRevealBack(scene, ctx, item, index, box) {
+  ctx.fillStyle = '#243430';
+  ctx.fillRect(box.x, box.y, box.w, box.h);
+  ctx.strokeStyle = '#d9c9ae';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(box.x + 1, box.y + 1, box.w - 2, box.h - 2);
+  if (item.isBonus) {
+    ctx.fillStyle = palette.gold;
+    ctx.font = '28px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('✦', box.x + box.w / 2, box.y + box.h / 2 + 8);
+    ctx.textAlign = 'left';
+    return;
+  }
+  const entry = scene.game.state.items[index];
+  if (!entry || entry.visibility === 0) return;
+  if (entry.visibility === 1) ctx.filter = 'brightness(0.58)';
+  cargoSprite(scene, ctx, index, box, false);
+  ctx.filter = 'none';
+  if (entry.coverCloth) {
+    ctx.fillStyle = '#4a5e50c0';
+    ctx.fillRect(box.x, box.y, box.w, box.h);
   }
 }

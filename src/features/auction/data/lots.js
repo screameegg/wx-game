@@ -1,5 +1,6 @@
 import { bandWeights, bandResults } from '../rules/band-presets';
 // 试玩数值；每场开始时固定结果。
+// TODO(round-2): 轻量台词先不接入（债主开场、乐队拍卖员硬信息、还款/查封、对手结算吐槽）。只改文案，不动出价和债务数字。
 export const lots = [
   { name: '乐队巡演箱', theme: 'band', story: '巡演结束后，部分器材无人认领。运输途中曾淋雨，物品可能受潮。', auctioneerLines: [
     '运输途中遇过雨，纸质物品要留意受潮。听说这批货跟着乐队跑过几座城市。',

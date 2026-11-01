@@ -1,6 +1,6 @@
 import { steps } from '../shared/chrome';
-import { expression, drawPlayerPaddle } from '../people/actors';
-import { sprite } from '../../render/sprites';
+import { drawPlayerPaddle } from '../people/actors';
+import { auctionExpression, drawExpression } from '../people/expressions';
 import { palette, progress, panel } from '../../render/ui';
 
 // 竞价只显示对手、价格与决策，不注册货物热区。
@@ -8,11 +8,11 @@ export function bidding(scene, ctx) {
   const s = scene.game.state; steps(scene, ctx, 1);
   scene.text(ctx, '看看对手，再决定要不要加价', 24, 125, 18);
   s.rivals.forEach((rival, i) => {
-    const frame = expression(scene.game, rival); const x = i ? 196 : 20;
+    const mood = auctionExpression(scene.game, rival); const x = i ? 196 : 20;
     panel(ctx, x - 2, 150, 161, 235, palette.panel, 16);
-    sprite(ctx, scene.art.get(i ? 'lanSheet' : 'zhouSheet'), i * 6 + frame, 6, 2, x, 150, 158, 158);
+    drawExpression(scene, ctx, i, mood, x, 150, 158, 158);
     scene.text(ctx, rival.name, x + 43, 331, 17, palette.text);
-    scene.text(ctx, ['观察', '思考', '皱眉', '发笑', '退出', '不服'][frame], x + 43, 352, 12, palette.muted);
+    scene.text(ctx, mood.label, x + 43, 352, 12, palette.muted);
     const hint = scene.game.situationHint(rival);
     if (hint) scene.text(ctx, hint.length > 12 ? `${hint.slice(0, 11)}…` : hint, x + 3, 375, 11, palette.muted);
   });

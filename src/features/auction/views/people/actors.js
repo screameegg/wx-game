@@ -1,15 +1,3 @@
-import { palette } from '../../render/ui';
-
-export function expression(game, rival) {
-  const text = game.reaction(rival);
-  if (text.includes('笑')) return 3;
-  if (text.includes('退出')) return 4;
-  if (text.includes('皱眉') || text.includes('擦汗')) return 2;
-  if (game.state.leader === rival.name) return 1;
-  if (text.includes('瞪眼')) return 5;
-  return 0;
-}
-
 // The buyer stays off-screen; the raised paddle and sleeve are the player's only portrait.
 export function drawPlayerPaddle(ctx, x, y, width, height, ornament = 0) {
   ctx.save(); ctx.translate(x, y); ctx.scale(width / 100, height / 160);
