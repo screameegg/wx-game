@@ -3,6 +3,8 @@ import { drawCargo } from '../../render/cargo';
 import { palette, panel } from '../../render/ui';
 import { economy } from '../../data/economy';
 import { infoCardBox } from '../../data/round3';
+import { tierVisual } from '../../data/observe-tiers';
+import { deviceExhausted } from '../../rules/device-use';
 export function observe(scene, ctx) {
   const reviewing = scene.reviewing; steps(scene, ctx, 0);
 
@@ -47,8 +49,9 @@ function drawToolCard(scene, ctx, name, x, width) {
   ctx.restore();
   scene.text(ctx, name, x + 42, y + 18, 12, palette.text);
   const price = economy.toolCost[name];
-  let note = !owned ? `购买 · ${price} 金币` : s.toolsUsed.includes(name) ? '本场已用完' : '先选货物';
-  if (owned && !s.toolsUsed.includes(name) && entry) {
+  const spent = owned && deviceExhausted(entry, name, s.toolsUsed);
+  let note = !owned ? `购买 · ${price} 金币` : spent ? '本场已用完' : '先选货物';
+  if (owned && !spent && entry) {
     if (entry.coverCloth) note = '帆布遮挡';
     else if (entry.visibility === 0) note = '位置太暗';
     else if (entry.visibility !== 1) note = '无需设备';
@@ -58,7 +61,9 @@ function drawToolCard(scene, ctx, name, x, width) {
   }
   scene.text(ctx, note, x + 42, y + 34, 10, palette.muted);
   scene.buttons.push({ x, y, w: width, h: 43, label: `${name}设备`, action: () => {
-    if (owned) scene.game.useTool(name, reviewing); else if (!reviewing) scene.menu.view = 'shop';
+    if (!owned) { if (!reviewing) scene.menu.view = 'shop'; return; }
+    if (deviceExhausted(s.items[s.selected], name, s.toolsUsed)) return;
+    scene.game.useTool(name, reviewing);
   } });
 }
 
@@ -77,11 +82,10 @@ function drawDetails(scene, ctx, reviewing) {
   if (!entry || !item) return;
 
   // 物品标题
-  const visLabel = entry.visibility === 2 ? '看得清' : entry.visibility === 1 ? '只见轮廓' : '不可见';
-  const visColor = entry.visibility === 2 ? palette.green : entry.visibility === 1 ? palette.gold : palette.muted;
+  const visual = tierVisual(entry.visibility);
   scene.text(ctx, `${index + 1} · ${entry.visibility === 2 ? item.clue : entry.visibility === 1 ? item.shape : '深处未知'}`, 24, 437, 17, palette.text);
-  panel(ctx, 270, 421, 60, 20, entry.visibility === 2 ? '#e2eddc' : entry.visibility === 1 ? '#f7ebd2' : '#ece7dc', 7);
-  scene.text(ctx, visLabel, 278, 435, 10, visColor);
+  panel(ctx, 270, 421, 60, 20, visual.badge, 7);
+  scene.text(ctx, visual.label, 278, 435, 10, visual.ink);
 
   // 线索描述（帆布盖布大件特殊说明）
   const clue = scene.game.clue(index);
