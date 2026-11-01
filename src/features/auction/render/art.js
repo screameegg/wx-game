@@ -3,6 +3,7 @@ import { round3Art } from '../data/round3';
 import { round5Art } from '../data/round5';
 import { round8Slots } from '../data/round8-art';
 import { round9Slots } from '../data/round9';
+import { round10Slots } from '../data/round10';
 
 const root = 'assets/resources/art';
 const files = { harbor: 'container', zhouSheet: 'rivals', lanSheet: 'rivals', itemSheet: 'cargo', resultSheet: 'cargo', extraSheet: 'photo-repair' };
@@ -40,6 +41,13 @@ export default class AuctionArt {
     });
     // 收藏格、珍品角标和仓库列表的参考图。缺文件就留空，画面用矢量占位。
     round9Slots.forEach((slot) => {
+      const image = wx.createImage();
+      image.onload = () => { this.images[slot.key] = image; redraw(); };
+      image.onerror = () => redraw();
+      image.src = slot.path;
+    });
+    // 结算铭牌、还款日卡、进阶提示。缺文件就留空，画面退回手绘框。
+    round10Slots.forEach((slot) => {
       const image = wx.createImage();
       image.onload = () => { this.images[slot.key] = image; redraw(); };
       image.onerror = () => redraw();

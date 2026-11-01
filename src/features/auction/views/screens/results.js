@@ -1,39 +1,41 @@
-import { divider, palette, panel } from '../../render/ui';
 import { dockArgs, splitDock } from '../../data/round7';
+import { economy } from '../../data/economy';
+import { judgeLine } from '../../data/lines';
+import {
+  reactionLine, reactionSlots, repayGlance, repayNarrative, repayTitle, repayView,
+  repaymentLayout, settlementLayout, settlementModel,
+} from '../../data/round10';
+import { drawRepayCard, drawSettlement } from '../../fx/round10-present';
+import { watchUnlockPose } from '../../fx/watch-unlock';
+import { paymentDue } from '../../rules/debt';
+import { auctionsRemaining } from '../../rules/debt-clock';
 import { drawPlayerPaddle } from '../people/actors';
 import { drawExpression, settlementExpression } from '../people/expressions';
-import { judgeLine } from '../../data/lines';
-import { watchUnlockPose } from '../../fx/watch-unlock';
 
 export function settlement(scene, ctx) {
-  const s = scene.game.state; const net = s.income - s.spent;
+  const s = scene.game.state;
   const roi = s.spent > 0 ? (s.income / s.spent) : 0;
-  const win = net >= 0; const tone = win ? palette.green : palette.red;
-  panel(ctx, 24, 88, 327, 128, win ? '#e7f3e4' : '#f8e6e1', 16);
-  scene.text(ctx, '本场盈亏', 40, 112, 13, palette.muted);
-  scene.text(ctx, win ? '赚了' : '亏了', 40, 150, 30, tone);
-  const amount = `${net > 0 ? '+' : ''}${net}`;
-  scene.text(ctx, amount, 132, 156, 48, tone);
-  scene.text(ctx, '金币', 132, 184, 13, palette.muted);
-  scene.text(ctx, `出售 ${s.income} − 成交 ${s.spent}`, 196, 184, 12, palette.muted);
-  const extra = s.collectedValue ? 28 : 0;
-  if (s.collectedValue) scene.text(ctx, `收藏参考 ${s.collectedValue}，不计收入`, 40, 236, 12, palette.muted);
-  divider(ctx, 24, 220 + extra, 327);
-  const zhou = settlementExpression('老周', roi);
-  const lan = settlementExpression('阿岚', roi);
-  drawExpression(scene, ctx, 0, zhou, 28, 228 + extra, 112, 112);
-  drawExpression(scene, ctx, 1, lan, 220, 228 + extra, 112, 112);
-  const quoteY = 354 + extra;
-  scene.text(ctx, `老周：${judgeLine(roi, '老周')}`, 28, quoteY, 12);
-  scene.text(ctx, zhou.label, 28, quoteY + 18, 12, palette.gold);
-  scene.text(ctx, `阿岚：${judgeLine(roi, '阿岚')}`, 220, quoteY, 12);
-  scene.text(ctx, lan.label, 220, quoteY + 18, 12, palette.gold);
+  const layout = settlementLayout(scene.height);
+  const faces = ['老周', '阿岚'].map((name) => {
+    const expr = settlementExpression(name, roi);
+    return { name, label: expr.label, spoken: reactionLine(judgeLine(roi, name)), expr };
+  });
+  drawSettlement(scene, ctx, {
+    layout,
+    model: settlementModel(s),
+    faces,
+    notice: s.ornamentNotice || '',
+  });
+  const slots = reactionSlots(layout.reaction);
+  faces.forEach((face, index) => {
+    const slot = index ? slots.right : slots.left;
+    drawExpression(scene, ctx, index, face.expr, slot.x, slot.y, slot.w, slot.h);
+  });
   const unlock = scene.watchUnlock;
   const wristPose = watchUnlockPose(unlock ? Date.now() - unlock.at : Infinity);
   if (unlock) unlock.phase = wristPose.phase;
-  drawPlayerPaddle(ctx, 156, quoteY + 28, 52, 78, s.ornament, unlock && wristPose.phase !== 'done' ? { ...wristPose, image: scene.art && scene.art.get('watchUnlock') } : null);
-  if (s.ornamentNotice) scene.text(ctx, s.ornamentNotice, 24, quoteY + 112, 12, palette.gold);
-  scene.link(ctx, '查看每件物品，复盘线索', 24, scene.height - 118, 280, () => { scene.menu.view = 'ledger'; });
+  drawPlayerPaddle(ctx, slots.paddle.x, slots.paddle.y, slots.paddle.w, slots.paddle.h, s.ornament, unlock && wristPose.phase !== 'done' ? { ...wristPose, image: scene.art && scene.art.get('watchUnlock') } : null);
+  scene.link(ctx, '查看每件物品，复盘线索', layout.link.x, layout.link.y, layout.link.w, () => { scene.menu.view = 'ledger'; });
   const dock = splitDock(scene.height);
   scene.button(ctx, '设备', dock.secondary.x, dock.secondary.y, dock.secondary.w, dock.secondary.h, () => { scene.menu.view = 'shop'; }, true);
   scene.button(ctx, '去看下一箱', dock.primary.x, dock.primary.y, dock.primary.w, dock.primary.h, () => scene.game.prepareRound());
@@ -41,13 +43,22 @@ export function settlement(scene, ctx) {
 
 export function repayment(scene, ctx) {
   const s = scene.game.state;
-  scene.text(ctx, '到了还款日', 24, 130, 26);
-  if (s.creditorLine) {
-    scene.text(ctx, '债主', 24, 176, 13, palette.gold);
-    scene.paragraph(ctx, s.creditorLine, 24, 204, 327, 16, 3);
-    scene.paragraph(ctx, s.notice, 24, 280, 327, 14, 4);
-  } else scene.paragraph(ctx, s.notice, 24, 205, 327, 18, 6);
-  scene.text(ctx, `当前余额 ${s.coins} 金币`, 24, 412, 21, palette.gold);
+  const layout = repaymentLayout(scene.height);
+  const glance = repayGlance({
+    phase: s.phase,
+    due: paymentDue(s),
+    remaining: auctionsRemaining(s),
+    coins: s.coins,
+    arrears: s.arrears,
+    overdue: s.overdue,
+    creditorKey: s.creditorKey,
+    missesToSeize: economy.seizureOverdueCount,
+  });
+  drawRepayCard(scene, ctx, layout.card, repayView(glance, { title: repayTitle(s.phase, glance.remaining) }), layout.sketch);
+  const story = repayNarrative(s.notice, s.creditorLine);
+  if (story.who) scene.text(ctx, story.who, layout.copy.x, layout.copy.y, 13, '#B85C38');
+  if (story.line) scene.paragraph(ctx, story.line, layout.copy.x, layout.copy.y + (story.who ? 24 : 0), layout.copy.w, 16, 3);
+  if (story.detail) scene.paragraph(ctx, story.detail, layout.copy.x, layout.copy.y + 78, layout.copy.w, 14, 3);
+  scene.text(ctx, `当前余额 ${s.coins} 金币`, layout.balance.x, layout.balance.y, 18, '#B85C38');
   scene.button(ctx, '继续经营', ...dockArgs(scene.height), () => scene.game.continueAfterRepayment());
 }
-
