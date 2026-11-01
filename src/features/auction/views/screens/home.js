@@ -23,7 +23,7 @@ export function home(scene, ctx) {
     if (s.phase === 'home') scene.game.reset(); scene.menu.view = '';
   });
   scene.link(ctx, '怎么玩', edge, scene.height - 52, 125, () => { scene.menu.view = 'help'; });
-  scene.link(ctx, '收藏图鉴', layoutTokens.designWidth - edge - 125, scene.height - 52, 125, () => { scene.menu.collectionTheme = ''; scene.menu.view = 'collection'; });
+  scene.link(ctx, '收藏图鉴', layoutTokens.designWidth - edge - 125, scene.height - 52, 125, () => { scene.menu.collectionTheme = ''; scene.menu.collectionPane = 'atlas'; scene.menu.view = 'collection'; });
 }
 export function help(scene, ctx) {
   scene.text(ctx, '拍卖与经营，四步上手', 24, 125, 25);
