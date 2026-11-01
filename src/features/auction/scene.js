@@ -10,6 +10,7 @@ import { drawFeedback } from './fx/beats';
 import { drawDeviceUpgrade } from './fx/device-upgrade';
 import { clampPause, preHammerBeat } from './data/round5';
 import { drawPreHammerHold, syncAuctionBeat } from './fx/round5-beats';
+import { revealNeedsFrame, syncRevealReel } from './fx/round6-beats';
 
 // 场景只负责路由与局部动效；每个阶段有自己的绘制模块。
 export default class GameScene extends CanvasView {
@@ -40,13 +41,14 @@ export default class GameScene extends CanvasView {
   get motionActive() {
     const now = Date.now();
     const alive = (fx) => !!fx && now - fx.at < (durations[fx.kind] || 1000);
-    return alive(this.effect) || alive(this.debtTick) || alive(this.watchUnlock);
+    return alive(this.effect) || alive(this.debtTick) || alive(this.watchUnlock) || revealNeedsFrame(this, now);
   }
   render(ctx) {
     this.prepare(ctx); const phase = this.game.state.phase;
     if (phase !== 'auction') this.reviewing = false;
     if (phase !== 'auction' && this.pointer && this.pointer.role === 'raise') this.pointer = null;
     syncAuctionBeat(this);
+    syncRevealReel(this);
     const holding = this.hammerHolding() && !this.menu.view;
     if (holding && this.game.state.winner === '你' && Number.isFinite(this.game.state.spent)) {
       this.coinPreview = this.game.state.coins + this.game.state.spent;

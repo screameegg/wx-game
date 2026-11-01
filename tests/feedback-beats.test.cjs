@@ -272,12 +272,13 @@ test('screens draw the four beats without throwing', async () => {
   ctx.texts.length = 0;
   reveal(view, ctx);
   assert.equal(view.effect.phase, 'back');
-  assert.ok(ctx.texts.includes('翻开…'));
-  assert.equal(view.buttons.some((button) => String(button.label).includes('出售')), false);
+  assert.ok(ctx.texts.includes('点击放大'));
+  assert.equal(view.buttons.some((button) => button.label === '卖掉' || button.label === '收下'), false);
   view.effect.at = Date.now() - 5000;
   view.buttons = [];
   reveal(view, ctx);
-  assert.ok(view.buttons.some((button) => String(button.label).includes('出售')));
+  assert.ok(view.buttons.some((button) => button.label === '卖掉'));
+  assert.ok(view.buttons.some((button) => button.label === '收下'));
 
   while (game.state.phase === 'reveal') {
     const index = game.state.items.findIndex((item) => item.status === 'hidden' || item.status === 'revealed');
