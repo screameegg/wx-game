@@ -1,4 +1,5 @@
 import { bandItemIds, bandPieceKey, bandPiecePath, round1Art } from '../data/round1-art';
+import { round3Art } from '../data/round3';
 
 const root = 'assets/resources/art';
 const files = { harbor: 'container', zhouSheet: 'rivals', lanSheet: 'rivals', itemSheet: 'cargo', resultSheet: 'cargo', extraSheet: 'photo-repair' };
@@ -20,6 +21,13 @@ export default class AuctionArt {
       image.onerror = () => redraw();
       image.src = bandPiecePath(id, silhouette);
     }));
+    Object.entries(round3Art).forEach(([key, src]) => {
+      if (!src || !/\.(png|jpg|jpeg|webp)$/i.test(src)) return;
+      const image = wx.createImage();
+      image.onload = () => { this.images[key] = image; redraw(); };
+      image.onerror = () => redraw();
+      image.src = src;
+    });
   }
   get(key) { return this.images[key === 'container' ? 'harbor' : key]; }
 }

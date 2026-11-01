@@ -1,6 +1,12 @@
 import { panel, palette } from './ui';
+import { debtTickBeat, deviceUpgradeBeat, watchUnlockBeat } from '../data/round3';
 
-export const durations = { open: 1300, bid: 650, hammer: 1200, reveal: 920, sell: 1100, collect: 1000, pnl: 1500, flashlight: 850, magnify: 700, inspect: 360 };
+export const durations = {
+  open: 1300, bid: 650, hammer: 1200, reveal: 920, sell: 1100, collect: 1000, pnl: 1500, flashlight: 850, magnify: 700, inspect: 360,
+  deviceUpgrade: Math.min(300, deviceUpgradeBeat.capMs, deviceUpgradeBeat.durationMs),
+  debtTick: debtTickBeat.durationMs,
+  watchUnlock: watchUnlockBeat.durationMs,
+};
 export function effectProgress(scene, kind, now = Date.now()) {
   const effect = scene.effect;
   if (!effect || effect.kind !== kind) return 1;

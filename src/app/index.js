@@ -2,7 +2,8 @@ import { createScreen } from '../platform/screen';
 import Game from '../features/auction/game';
 import GameScene from '../features/auction/scene';
 import Effects from '../features/audio/effects';
-import { audible, cueFromResponse, cueFromTouch } from '../features/auction/fx/cues';
+import { audible, cueFromResponse, cueFromTouch, extraCues } from '../features/auction/fx/cues';
+import { auctionsRemaining } from '../features/auction/rules/debt-clock';
 
 // 帧循环负责真实动画，游戏规则仍由 Game 独立管理。
 export default class App {
@@ -18,16 +19,18 @@ export default class App {
   onTouch(event) {
     const touch = event.touches && event.touches[0]; if (!touch || this.hidden) return;
     const s = this.game.state;
-    const before = { phase: s.phase, selected: s.selected, income: s.income, pending: s.pending, collected: s.collection.length, evidence: (s.items || []).map((item) => [item.categoryKnown, item.conditionKnown]), statuses: (s.items || []).map((item) => item.status) };
+    const before = { phase: s.phase, selected: s.selected, income: s.income, pending: s.pending, collected: s.collection.length, ornament: s.ornament, remaining: auctionsRemaining(s), evidence: (s.items || []).map((item) => [item.categoryKnown, item.conditionKnown]), statuses: (s.items || []).map((item) => item.status) };
     this.scene.touch(touch.clientX, touch.clientY);
-    this.playCue(cueFromTouch(before, this.game.state, { reviewing: this.scene.reviewing }));
+    const state = this.game.state;
+    this.playCue(cueFromTouch(before, state, { reviewing: this.scene.reviewing }));
+    extraCues(before, state).forEach((beat) => this.playCue(beat));
     this.render();
   }
   playCue(beat) {
     if (!beat) return;
     this.scene.playEffect(beat.kind, beat.detail || {});
     const gate = { soundEnabled: this.game.state.soundEnabled, paused: !!this.scene.menu.view, hidden: this.hidden };
-    if (audible(beat, gate)) this.effects.play(beat.sound, true);
+    if (audible(beat, gate)) this.effects.play(beat.sound, true, beat.detail && beat.detail.sfxFile);
   }
   animate() {
     if (this.animationId !== null || this.hidden) return;

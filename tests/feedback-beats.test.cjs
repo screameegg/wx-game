@@ -148,7 +148,8 @@ test('deal, flip and profit cues fire in a played round', async () => {
   game.state.items[0].categoryKnown = true;
   const beforeLight = snap(game.state);
   beforeLight.evidence[0][0] = false;
-  assert.equal(cueFromTouch(beforeLight, game.state, {}).kind, 'flashlight');
+  assert.equal(game.state.items[0].visibility, 2);
+  assert.equal(cueFromTouch(beforeLight, game.state, {}), null);
 
   const beforeAuction = snap(game.state);
   game.beginBidding();

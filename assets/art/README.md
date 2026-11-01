@@ -40,3 +40,13 @@ Speaker busts and speech-bubble frames. Paths only; no dialogue copy in this dro
 - `assets/art/rivals/alan_speak.png` — A Lan speaking, 1024×1024
 
 Path map: `src/features/auction/data/round2-art.js` (`round2Art`).
+
+# Falcon art round 3
+
+P1 feedback beats. Timings and ids live in `src/features/auction/data/round3.js`.
+
+- `assets/art/falcon-art-round3/device/device_upgrade_vfx.png` — flashlight/magnifier flash, info-card outline, level-up arrow
+- `assets/art/falcon-art-round3/debt/debt_tick_frames.png` — debt-bar sparkle frames for `sfx_debt_tick`
+- `assets/art/falcon-art-round3/accessory/accessory_watch_unlock.png` — stage 0 bare wrist to stage 1 old watch
+
+Drop-in audio (optional): `assets/audio/effects/sfx_debt_tick.wav`. The id is `sfx_debt_tick`. The sparkle still plays if the file is absent.
