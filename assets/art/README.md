@@ -50,3 +50,12 @@ P1 feedback beats. Timings and ids live in `src/features/auction/data/round3.js`
 - `assets/art/falcon-art-round3/accessory/accessory_watch_unlock.png` — stage 0 bare wrist to stage 1 old watch
 
 Drop-in audio (optional): `assets/audio/effects/sfx_debt_tick.wav`. The id is `sfx_debt_tick`. The sparkle still plays if the file is absent.
+
+# Falcon art round 4
+
+Observe-tier guides only. In-game strokes and hotspots are drawn from `src/features/auction/data/observe-tiers.js`. These sheets are not item sprites.
+
+- `assets/art/falcon-art-round4/observe_visibility_tiers.png` — doorway green stroke, silhouette amber stroke, deep light-gray dashed stroke, plus hotzones
+- `assets/art/falcon-art-round4/observe_hotzone_rules.png` — clear / silhouette / deep outlines; minimum touch target 44px
+
+TODO: if painted per-item outlines arrive, point `observeArt` at them and swap the stroke helper. Do not feed those pixels into bids.

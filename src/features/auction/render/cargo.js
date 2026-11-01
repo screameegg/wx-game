@@ -1,6 +1,9 @@
 import { cover, panel, palette } from './ui';
 import { cargoSprite } from './sprites';
 import { effectProgress, easeOut } from './motion';
+import { tierVisual } from '../data/observe-tiers';
+import { hotspotOrder, resolveHotspots } from './hotspots';
+import { drawHotspotDebug, strokeTierBox } from './tier-stroke';
 
 export const cargoLayout = [
   { x: 34, y: 264, w: 109, h: 99 }, { x: 133, y: 281, w: 119, h: 78 },
@@ -15,15 +18,22 @@ export function stage(scene, ctx) {
 function item(scene, ctx, index) {
   const s = scene.game.state; const entry = s.items[index]; const box = cargoLayout[index];
   if (entry.status === 'sold' || entry.status === 'collected') return;
+  const visual = tierVisual(entry.visibility);
   ctx.save();
   if (entry.categoryKnown) drawLight(scene, ctx, index, box);
-  if (entry.visibility === 0) {
-    // 深处：有单件剪影就用剪影，否则仍是暗格。
-    if (!cargoSprite(scene, ctx, index, box)) { ctx.fillStyle = '#101b1bc9'; ctx.fillRect(box.x + 10, box.y + 15, box.w - 20, box.h - 20); }
-  } else {
+  ctx.save();
+  ctx.globalAlpha = visual.spriteAlpha;
+  let drew = false;
+  if ((entry.visibility || 0) <= 0) drew = !!cargoSprite(scene, ctx, index, box);
+  else {
     const ownArt = scene.game.lot && scene.game.lot.items[index] && scene.game.lot.items[index].artId;
     if (entry.visibility === 1 && !entry.categoryKnown && !ownArt) ctx.filter = 'brightness(0.48)';
-    cargoSprite(scene, ctx, index, box); ctx.filter = 'none';
+    drew = !!cargoSprite(scene, ctx, index, box); ctx.filter = 'none';
+  }
+  ctx.restore();
+  if ((entry.visibility || 0) <= 0) {
+    if (!drew) { ctx.fillStyle = '#101b1bc9'; ctx.fillRect(box.x + 10, box.y + 15, box.w - 20, box.h - 20); }
+    else if (visual.wash) { ctx.fillStyle = `rgba(8, 14, 16, ${visual.wash})`; ctx.fillRect(box.x, box.y, box.w, box.h); }
   }
 
   // 帆布盖布大件：叠加帆布纹理色块（S02，盖布形态的第3件物品）
@@ -39,8 +49,9 @@ function item(scene, ctx, index) {
   }
 
   ctx.restore();
+  if (entry.status === 'hidden') strokeTierBox(ctx, box, entry.visibility);
 
-  if (entry.categoryKnown) {
+  if (entry.categoryKnown && entry.visibility === 1) {
     const lotItem = scene.game.lot.items[index];
     const label = lotItem.category || '类别已辨认'; const badgeWidth = Math.min(box.w, Math.max(48, label.length * 10 + 12));
     panel(ctx, box.x + (box.w - badgeWidth) / 2, box.y - 14, badgeWidth, 18, '#fff3d4', 8);
@@ -54,7 +65,6 @@ function item(scene, ctx, index) {
   // 编号徽章
   panel(ctx, box.x + box.w / 2 - 10, box.y + box.h - 10, 22, 22, s.selected === index ? palette.gold : '#182b2ed9', 11);
   scene.text(ctx, `${index + 1}`, box.x + box.w / 2 - 3, box.y + box.h + 6, 12, s.selected === index ? '#16272b' : '#e6dac2');
-  scene.buttons.push({ ...box, label: `货物${index + 1}`, action: () => s.phase === 'reveal' ? scene.game.reveal(index) : scene.game.inspect(index, scene.reviewing) });
 }
 
 function drawLight(scene, ctx, index, box) {
@@ -103,8 +113,23 @@ function doors(scene, ctx) {
 }
 
 export function drawCargo(scene, ctx) {
+  const items = scene.game.state.items || [];
   scene.itemBounds = cargoLayout;
-  [4, 3, 0, 2, 1].forEach((index) => item(scene, ctx, index)); doors(scene, ctx);
+  [4, 3, 0, 2, 1].forEach((index) => { if (items[index]) item(scene, ctx, index); });
+  const vis = cargoLayout.map((_, index) => (items[index] ? items[index].visibility : 0));
+  const rects = resolveHotspots(cargoLayout, vis);
+  scene.itemHotspots = rects;
+  if (scene.hotspotDebug) drawHotspotDebug(ctx, rects, vis);
+  hotspotOrder(vis).forEach((index) => {
+    const entry = items[index];
+    if (!entry || entry.status === 'sold' || entry.status === 'collected') return;
+    const box = rects[index];
+    scene.buttons.push({
+      x: box.x, y: box.y, w: box.w, h: box.h, label: `货物${index + 1}`,
+      action: () => scene.game.state.phase === 'reveal' ? scene.game.reveal(index) : scene.game.inspect(index, scene.reviewing),
+    });
+  });
+  doors(scene, ctx);
   if (scene.game.state.phase === 'observe' && scene.game.state.selected >= 0) drawInspection(scene, ctx, scene.game.state.selected);
 }
 
@@ -116,24 +141,31 @@ function drawInspection(scene, ctx, index) {
   ctx.save(); ctx.fillStyle = 'rgba(18, 30, 31, 0.66)'; ctx.fillRect(18, 168, 339, 229); ctx.restore();
   panel(ctx, x, y, w, h, '#f5edda', 15);
   panel(ctx, x + 9, y + 9, 122, 151, '#dfd0b3', 12);
-  if (entry.visibility === 0 && !cargoSprite(scene, ctx, index, { x: x + 18, y: y + 24, w: 104, h: 118 })) {
-    ctx.save(); ctx.fillStyle = '#263436'; ctx.fillRect(x + 24, y + 34, 92, 93);
-    ctx.strokeStyle = '#81735c'; ctx.lineWidth = 3; ctx.strokeRect(x + 24, y + 34, 92, 93);
-    ctx.fillStyle = '#d9c8a7'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('深处看不清', x + 70, y + 84); ctx.restore();
-  } else if (entry.visibility !== 0) {
+  const preview = { x: x + 18, y: y + 24, w: 104, h: 118 };
+  const visual = tierVisual(entry.visibility);
+  if ((entry.visibility || 0) <= 0) {
+    ctx.save(); ctx.globalAlpha = visual.spriteAlpha;
+    const drew = !!cargoSprite(scene, ctx, index, preview);
+    ctx.restore();
+    if (!drew) {
+      ctx.save(); ctx.fillStyle = '#263436'; ctx.fillRect(x + 24, y + 34, 92, 93);
+      ctx.fillStyle = '#d9c8a7'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('深处看不清', x + 70, y + 84); ctx.restore();
+    } else if (visual.wash) { ctx.fillStyle = `rgba(8, 14, 16, ${visual.wash})`; ctx.fillRect(preview.x, preview.y, preview.w, preview.h); }
+    strokeTierBox(ctx, preview, entry.visibility);
+  } else {
     ctx.save(); if (entry.visibility === 1 && !entry.categoryKnown && !lotItem.artId) ctx.filter = 'brightness(0.48)';
-    const target = { x: x + 18, y: y + 24, w: 104, h: 118 };
     const origin = cargoLayout[index]; const active = scene.effect && scene.effect.kind === 'inspect' && scene.effect.index === index;
     const p = active ? easeOut(effectProgress(scene, 'inspect')) : 1;
-    const box = { x: origin.x + (target.x - origin.x) * p, y: origin.y + (target.y - origin.y) * p, w: origin.w + (target.w - origin.w) * p, h: origin.h + (target.h - origin.h) * p };
+    const box = { x: origin.x + (preview.x - origin.x) * p, y: origin.y + (preview.y - origin.y) * p, w: origin.w + (preview.w - origin.w) * p, h: origin.h + (preview.h - origin.h) * p };
     cargoSprite(scene, ctx, index, box); ctx.restore();
+    strokeTierBox(ctx, box, entry.visibility);
   }
   ctx.save(); ctx.fillStyle = '#a17b4e'; ctx.font = 'bold 10px sans-serif'; ctx.fillText('单件检视', x + 16, y + 178); ctx.restore();
-  const visibleName = entry.visibility === 0 ? '深处物件' : entry.categoryKnown ? lotItem.category : entry.visibility === 1 ? lotItem.shape : lotItem.clue;
+  const visibleName = (entry.visibility || 0) <= 0 ? '深处物件' : entry.visibility === 1 ? (entry.categoryKnown ? lotItem.category : lotItem.shape) : lotItem.clue;
   scene.text(ctx, `${index + 1}号 · ${visibleName}`, x + 145, y + 35, 16, '#40372c');
   const clue = scene.game.clue(index);
   scene.paragraph(ctx, clue, x + 145, y + 62, 164, 13, 4);
-  if (entry.conditionKnown) scene.text(ctx, '表面状态已检查', x + 145, y + 132, 11, '#55736c');
-  else if (entry.categoryKnown) scene.text(ctx, '可用放大镜检查表面', x + 145, y + 132, 11, '#8a6740');
+  if (entry.visibility === 1 && entry.conditionKnown) scene.text(ctx, '表面状态已检查', x + 145, y + 132, 11, '#55736c');
+  else if (entry.visibility === 1 && entry.categoryKnown) scene.text(ctx, '可用放大镜检查表面', x + 145, y + 132, 11, '#8a6740');
   scene.button(ctx, '收回', x + 232, y + 158, 78, 34, () => scene.game.inspect(-1));
 }

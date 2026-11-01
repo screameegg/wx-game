@@ -3,6 +3,8 @@ import { economy, openingBid } from './data/economy';
 import { createRound } from './rules/round';
 import { resolveRepayment, paymentDue } from './rules/debt';
 import { applyCreditor, briefingCreditorKey } from './data/lines';
+import { playerCopy } from './rules/observe-copy';
+import { tryDeviceStep } from './rules/device-use';
 const KEY = 'container_treasure_save_v1';
 const fresh = () => ({ phase: 'home', coins: economy.startingCoins, round: 0, collection: [], discovered: [], unlocked: ['band'], tier: 'starter', tierPeriod: 0, tutorialDone: true, soundEnabled: true, equipment: [], debtPeriod: 0, arrears: 0, prepaid: 0, overdue: 0, pledged: null, profitTotal: 0, ornament: 0 });
 
@@ -92,13 +94,7 @@ export default class Game {
   }
   beginBidding() { const s = this.state; if (s.phase !== 'observe') return; s.phase = 'auction'; s.selected = -1; s.notice = '觉得值得就出价；价格太高可以放弃，不会扣款。'; this.save(); }
   get lot() { return lots[this.state.lotIndex]; }
-  clue(i) {
-    const item = this.lot.items[i]; const entry = this.state.items[i];
-    if (entry.visibility === 0) return '深处还有东西，无法辨认形状。';
-    if (entry.visibility === 1) return `${item.shape}：只能看见形状，内容不明。${entry.categoryKnown || entry.upgraded ? `手电显示类别：${item.category}。` : ''}${entry.conditionKnown ? `表面线索：${item.hint}` : ''}`;
-    if (this.lot.theme === 'band' && i === 0) return `${item.clue}：${entry.good ? '轮胎没气，车架完整。' : '轮胎没气，车架需要修理。'}`;
-    return `${item.clue}：${item.hint}`;
-  }
+  clue(i) { return playerCopy(this.lot.items[i], this.state.items[i], this.lot, i); }
   inspect(i, reviewing = false) {
     if (this.state.phase !== 'observe' && !(this.state.phase === 'auction' && reviewing && !this.state.pending)) return;
     if (i === -1) { this.state.selected = -1; this.save(); return; }
@@ -121,20 +117,11 @@ export default class Game {
     const s = this.state;
     if (s.phase !== 'observe' && !(s.phase === 'auction' && reviewing && !s.pending)) return;
     const entry = s.items[s.selected];
-    if (!entry) { s.notice = '先点选一件货物，再使用设备。'; this.save(); return; }
-    if (entry.visibility !== 1) {
-      s.notice = entry.visibility === 0 ? '这件货物太暗，首版设备看不清。' : '这件货物已经看清，不需要设备。';
-      this.save(); return;
-    }
-    const name = requested || (entry.categoryKnown ? '放大镜' : '手电');
-    if (!['手电', '放大镜'].includes(name)) { s.notice = '没有这件设备。'; this.save(); return; }
-    if (name === '放大镜' && !entry.categoryKnown) { s.notice = '先对这件货物使用手电，看清类别后再用放大镜。'; this.save(); return; }
-    if (name === '手电' && entry.categoryKnown) { s.notice = '这件货物的类别已看清，可以用放大镜检查表面。'; this.save(); return; }
-    if (!s.equipment.includes(name)) { s.notice = `还没有${name}，请先到设备页购买。`; this.save(); return; }
-    if (s.toolsUsed.includes(name)) { s.notice = `${name}本场已经用过了。`; this.save(); return; }
-    if (name === '手电') entry.categoryKnown = true;
-    else { entry.conditionKnown = true; entry.upgraded = true; }
-    s.toolsUsed.push(name); s.notice = `${name}照亮了这件货物。${this.clue(s.selected)}`;
+    const name = requested || (entry && entry.categoryKnown ? '放大镜' : '手电');
+    const step = tryDeviceStep(entry, name, { roundUses: s.toolsUsed, owned: s.equipment.includes(name) });
+    if (!step.ok) { s.notice = step.notice; this.save(); return; }
+    s.toolsUsed.push(name);
+    s.notice = `${name}照亮了这件货物。${this.clue(s.selected)}`;
     this.save();
   }
   // 对手反应文本：只依赖可见信息与价格差距，不读取隐藏内容

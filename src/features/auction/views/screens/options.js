@@ -13,6 +13,7 @@ export function options(scene, ctx) {
   ];
   rows.forEach(([label, action], i) => scene.button(ctx, label, 24, 168 + i * 58, 327, 44, action, i > 0));
   if (s.phase === 'auction' && !s.pending) scene.link(ctx, '设置自己的出价提醒', 24, 520, 327, () => { scene.menu.view = 'ceiling'; });
+  scene.link(ctx, `热区线框：${scene.hotspotDebug ? '开' : '关'}`, 24, 562, 327, () => { scene.hotspotDebug = !scene.hotspotDebug; });
 }
 export function confirmReset(scene, ctx) {
   scene.text(ctx, '重新开始一份生意？', 24, 140, 24);
