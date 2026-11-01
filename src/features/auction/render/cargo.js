@@ -1,5 +1,5 @@
 import { cover, panel, palette } from './ui';
-import { cargoSprite } from './sprites';
+import { cargoSprite, dedicatedPiece } from './sprites';
 import { effectProgress, easeOut } from './motion';
 import { tierVisual } from '../data/observe-tiers';
 import { hotspotOrder, resolveHotspots } from './hotspots';
@@ -26,7 +26,7 @@ function item(scene, ctx, index) {
   let drew = false;
   if ((entry.visibility || 0) <= 0) drew = !!cargoSprite(scene, ctx, index, box);
   else {
-    const ownArt = scene.game.lot && scene.game.lot.items[index] && scene.game.lot.items[index].artId;
+    const ownArt = !!dedicatedPiece(scene, index);
     if (entry.visibility === 1 && !entry.categoryKnown && !ownArt) ctx.filter = 'brightness(0.48)';
     drew = !!cargoSprite(scene, ctx, index, box); ctx.filter = 'none';
   }
@@ -153,7 +153,7 @@ function drawInspection(scene, ctx, index) {
     } else if (visual.wash) { ctx.fillStyle = `rgba(8, 14, 16, ${visual.wash})`; ctx.fillRect(preview.x, preview.y, preview.w, preview.h); }
     strokeTierBox(ctx, preview, entry.visibility);
   } else {
-    ctx.save(); if (entry.visibility === 1 && !entry.categoryKnown && !lotItem.artId) ctx.filter = 'brightness(0.48)';
+    ctx.save(); if (entry.visibility === 1 && !entry.categoryKnown && !dedicatedPiece(scene, index)) ctx.filter = 'brightness(0.48)';
     const origin = cargoLayout[index]; const active = scene.effect && scene.effect.kind === 'inspect' && scene.effect.index === index;
     const p = active ? easeOut(effectProgress(scene, 'inspect')) : 1;
     const box = { x: origin.x + (preview.x - origin.x) * p, y: origin.y + (preview.y - origin.y) * p, w: origin.w + (preview.w - origin.w) * p, h: origin.h + (preview.h - origin.h) * p };

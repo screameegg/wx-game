@@ -1,6 +1,7 @@
 import { bandItemIds, bandPieceKey, bandPiecePath, round1Art } from '../data/round1-art';
 import { round3Art } from '../data/round3';
 import { round5Art } from '../data/round5';
+import { round8Slots } from '../data/round8-art';
 
 const root = 'assets/resources/art';
 const files = { harbor: 'container', zhouSheet: 'rivals', lanSheet: 'rivals', itemSheet: 'cargo', resultSheet: 'cargo', extraSheet: 'photo-repair' };
@@ -22,6 +23,13 @@ export default class AuctionArt {
       image.onerror = () => redraw();
       image.src = bandPiecePath(id, silhouette);
     }));
+    // 摄影 / 维修单件图。文件不存在就留空，画面回退到原剪影或文字。
+    round8Slots.forEach((slot) => {
+      const image = wx.createImage();
+      image.onload = () => { this.images[slot.key] = image; redraw(); };
+      image.onerror = () => redraw();
+      image.src = slot.path;
+    });
     Object.entries(round3Art).forEach(([key, src]) => {
       if (!src || !/\.(png|jpg|jpeg|webp)$/i.test(src)) return;
       const image = wx.createImage();

@@ -1,4 +1,5 @@
 import { bandPieceKey, bandUsesSilhouette } from '../data/round1-art';
+import { isRound8Theme, lotPieceKey } from '../data/round8-art';
 
 // 图集坐标与图片比例仅由这个模块管理，业务层不接触像素裁切。
 export function sprite(ctx, image, index, columns, rows, x, y, w, h) {
@@ -105,17 +106,30 @@ function drawFitted(ctx, image, box) {
   const w = image.width * scale; const h = image.height * scale;
   ctx.drawImage(image, box.x + (box.w - w) / 2, box.y + (box.h - h) / 2, w, h);
 }
+function pieceKey(theme, artId, silhouette) {
+  return isRound8Theme(theme) ? lotPieceKey(theme, artId, silhouette) : bandPieceKey(artId, silhouette);
+}
+// 单件图已加载才算挂上。未到的摄影/维修图不当作自有美术，观察继续用原剪影。
+export function dedicatedPiece(scene, index, revealed = false) {
+  const entry = scene.game.state.items[index];
+  const lot = scene.game.lot;
+  const lotItem = lot && lot.items[index];
+  if (!entry || !lotItem || !lotItem.artId || !scene.art) return null;
+  const image = scene.art.get(pieceKey(lot.theme, lotItem.artId, bandUsesSilhouette(entry, revealed)));
+  return image && image.width > 0 ? image : null;
+}
 export function cargoSprite(scene, ctx, index, box, revealed = false) {
   const entry = scene.game.state.items[index];
   if (!entry) return false;
   const lotItem = scene.game.lot && scene.game.lot.items[index];
-  const piece = lotItem && lotItem.artId && scene.art.get(bandPieceKey(lotItem.artId, bandUsesSilhouette(entry, revealed)));
+  const theme = scene.game.lot && scene.game.lot.theme;
+  const piece = dedicatedPiece(scene, index, revealed);
   if (piece) { drawFitted(ctx, piece, box); return true; }
-  if (!revealed && entry.visibility === 0 && lotItem && lotItem.artId) return false;
+  // 乐队深处只认单件剪影。摄影和维修文件未到时，落到下面的原图集或文字。
+  if (!revealed && entry.visibility === 0 && theme === 'band' && lotItem && lotItem.artId) return false;
   const image = scene.art.get(revealed ? 'resultSheet' : 'itemSheet');
   if (!image) return false;
   const name = entry.result && entry.result[0] || '';
-  const theme = scene.game.lot && scene.game.lot.theme;
   const extra = revealed ? extraCell(name) : theme === 'photo' ? [0, 2, 3, -1, 5][index] : theme === 'repair' ? [6, 7, 8, 9, 10][index] : -1;
   if (extra >= 0) { drawExtra(ctx, scene.art.get('extraSheet'), extra, box); return true; }
   const cell = !revealed ? [0, 1, 15, 3, 4][index] : resultCell(name);
