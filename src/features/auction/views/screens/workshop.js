@@ -3,6 +3,12 @@ import { dockArgs } from '../../data/round7';
 import { catalogEntries, catalogStatus } from '../../data/catalog';
 import { economy, openingBid } from '../../data/economy';
 import { paymentDue } from '../../rules/debt';
+import { auctionsRemaining } from '../../rules/debt-clock';
+import {
+  advanceButtonLabel, advanceCount, advanceInner, advanceModel, advancePose, advanceStatus, advanceTipLine,
+  businessLayout, repayButtonBox, repayControl, repayGlance, repayTitle, repayView,
+} from '../../data/round10';
+import { drawAdvancePlate, drawRepayCard } from '../../fx/round10-present';
 
 // 设备商店直接展示购买项，避免从入口再点一层菜单。
 export function workshop(scene, ctx) {
@@ -37,32 +43,73 @@ function drawToolIcon(ctx, name, x, y) {
 }
 
 export function business(scene, ctx) {
-  const s = scene.game.state; const due = paymentDue(s);
-  const cycle = economy.repaymentCycleRounds;
-  const dueNow = s.round > 0 && s.round % cycle === 0 && s.debtPeriod < s.round / cycle;
-  const roundsLeft = dueNow ? 0 : (cycle - s.round % cycle || cycle);
-  scene.text(ctx, '还款与拍卖档位', 24, 125, 25);
-  scene.text(ctx, dueNow ? '本期还款日已到' : `还剩 ${roundsLeft} 场到还款日`, 24, 166, 14, palette.muted);
-  scene.text(ctx, `本期还差 ${due} 金币`, 24, 203, 25, palette.gold);
-  scene.text(ctx, `已提前还 ${s.prepaid || 0} · 账户 ${s.coins}`, 24, 228, 12, palette.muted);
-  const repayDisabled = due <= 0 || s.coins <= 0 || !['home', 'briefing', 'passed', 'settlement'].includes(s.phase);
-  const allLabel = s.coins >= due ? '本期全还' : '先还可用';
-  [['还 50',50,s.coins < 50],['还 100',100,s.coins < 100],[allLabel,due,false]].forEach(([label, amount, short], i) => {
-    scene.button(ctx, label, 24 + i * 111, 244, 103, 42, () => scene.game.repayEarly(amount), repayDisabled || short);
+  const s = scene.game.state;
+  const due = paymentDue(s);
+  const remaining = auctionsRemaining(s);
+  const withLink = s.tier === 'advanced' && s.coins < openingBid('advanced');
+  const layout = businessLayout(scene.height);
+  const glance = repayGlance({
+    phase: s.phase,
+    due,
+    remaining,
+    coins: s.coins,
+    arrears: s.arrears,
+    overdue: s.overdue,
+    creditorKey: s.creditorKey,
+    missesToSeize: economy.seizureOverdueCount,
   });
-  scene.text(ctx, '提前还款抵扣最近一期，不占拍卖场次。', 24, 305, 11, palette.muted);
-  scene.text(ctx, '经营目标', 24, 337, 17, palette.text);
-  const photo = s.unlocked.includes('photo'); const repair = s.unlocked.includes('repair');
-  const photoCost = economy.themeUnlock.photo; const repairCost = economy.themeUnlock.repair; const advancedEntry = economy.advancedEntryCoins;
-  scene.text(ctx, `摄影箱 ${photo ? '已解锁' : `${Math.min(s.coins, photoCost)} / ${photoCost} 金币`}`, 24, 364, 12, photo ? palette.green : palette.muted);
-  scene.text(ctx, `维修箱 ${repair ? '已解锁' : `${Math.min(s.coins, repairCost)} / ${repairCost} 金币`}`, 190, 364, 12, repair ? palette.green : palette.muted);
-  const catalog = catalogEntries(s); const found = catalog.filter((entry) => catalogStatus(s, entry.name).found).length;
-  scene.text(ctx, `图鉴收藏 ${found} / ${catalog.length} 种`, 24, 389, 12, palette.muted);
-  scene.button(ctx, s.tier === 'advanced' ? '已进入进阶档' : `进阶档 · ${Math.min(s.coins, advancedEntry)} / ${advancedEntry} 金币`, 24, 411, 327, 44, () => {
+  const model = advanceModel({ coins: s.coins, tier: s.tier, arrears: s.arrears, goal: economy.advancedEntryCoins });
+  const pose = advancePose(Number.isFinite(scene.advanceCueAt) ? Date.now() - scene.advanceCueAt : Infinity);
+  scene.text(ctx, '还款与拍卖档位', layout.card.x, layout.titleY, 20, palette.text);
+  drawRepayCard(scene, ctx, layout.card, repayView(glance, {
+    title: repayTitle(s.phase, remaining),
+    prepaid: s.prepaid || 0,
+  }), layout.sketch);
+  const commands = [
+    ['还 50', 50, s.coins < 50],
+    ['还 100', 100, s.coins < 100],
+    [s.coins >= due ? '本期全还' : '先还可用', due, false],
+  ];
+  let repayOpen = false;
+  commands.forEach(([label, amount, short], index) => {
+    const box = repayButtonBox(index, layout);
+    const control = repayControl({ due, coins: s.coins, phase: s.phase, short });
+    if (!control.disabled) repayOpen = true;
+    scene.button(ctx, label, box.x, box.y, box.w, box.h, () => scene.game.repayEarly(amount), false, {
+      disabled: control.disabled,
+      role: `repay:${index}`,
+    });
+  });
+  const photo = s.unlocked.includes('photo');
+  const repair = s.unlocked.includes('repair');
+  const photoCost = economy.themeUnlock.photo;
+  const repairCost = economy.themeUnlock.repair;
+  scene.text(ctx, `摄影箱 ${photo ? '已解锁' : `${Math.min(s.coins, photoCost)} / ${photoCost}`}`, layout.card.x, layout.goalsY, 12, photo ? palette.green : palette.muted);
+  scene.text(ctx, `维修箱 ${repair ? '已解锁' : `${Math.min(s.coins, repairCost)} / ${repairCost}`}`, layout.card.x + 168, layout.goalsY, 12, repair ? palette.green : palette.muted);
+  const catalog = catalogEntries(s);
+  const found = catalog.filter((entry) => catalogStatus(s, entry.name).found).length;
+  scene.text(ctx, `图鉴收藏 ${found} / ${catalog.length} 种`, layout.card.x, layout.goalsY + 16, 12, palette.muted);
+  const inner = advanceInner(layout.advance, withLink);
+  const tip = advanceTipLine({
+    bidStart: economy.advancedBidStart,
+    bidStep: economy.advancedBidStep,
+    nextDue: economy.advancedFirstPayment,
+  });
+  drawAdvancePlate(scene, ctx, {
+    plate: layout.advance,
+    inner,
+    model,
+    status: advanceStatus(model),
+    count: advanceCount(model),
+    tip,
+    pose,
+    notice: withLink ? '' : (s.notice || '还款有压力时，可以留钱、提前还款，或继续拍卖攒够资金。'),
+  });
+  scene.button(ctx, advanceButtonLabel(model), inner.button.x, inner.button.y, inner.button.w, inner.button.h, () => {
+    const before = s.tier;
     scene.game.upgradeTier();
-    if (s.tier !== 'advanced') { s.notice = s.arrears ? '先结清逾期欠款，才能升入进阶档。' : `金币达到 ${advancedEntry} 后可进入进阶档。`; scene.game.save(); }
-  }, s.tier === 'advanced' || s.coins < advancedEntry || s.arrears > 0);
-  if (s.tier === 'advanced' && s.coins < openingBid('advanced')) scene.link(ctx, '资金不足，返回入门档', 24, 463, 327, () => { s.tier = 'starter'; scene.game.save(); });
-  scene.paragraph(ctx, s.notice || '还款有压力时，可以留钱、提前还款，或继续拍卖攒够资金。', 24, 489, 327, 13, 3);
-  scene.button(ctx, '返回', ...dockArgs(scene.height), () => { scene.menu.view = s.phase === 'home' ? 'home' : 'shop'; });
+    if (before !== 'advanced' && s.tier === 'advanced') scene.advanceCueAt = Date.now();
+  }, false, { disabled: !model.ready, role: 'advance' });
+  if (withLink) scene.link(ctx, '资金不足，返回入门档', inner.link.x, inner.link.y, inner.link.w, () => { s.tier = 'starter'; scene.advanceCueAt = null; scene.game.save(); });
+  scene.button(ctx, '返回', ...dockArgs(scene.height), () => { scene.menu.view = s.phase === 'home' ? 'home' : 'shop'; }, repayOpen || model.ready);
 }

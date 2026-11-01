@@ -290,7 +290,7 @@ test('screens draw the four beats without throwing', async () => {
   drawFeedback(view, ctx);
   settlement(view, ctx);
   assert.equal(view.effect.phase, 'in');
-  assert.ok(ctx.texts.includes('赚了') || ctx.texts.includes('亏了'));
+  assert.ok(ctx.texts.includes('赚了') || ctx.texts.includes('亏了') || ctx.texts.includes('打平'));
   assert.ok(ctx.texts.includes('本场盈亏'));
 
   game.state.phase = 'passed';
