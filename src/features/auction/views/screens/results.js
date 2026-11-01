@@ -1,4 +1,5 @@
 import { divider, palette, panel } from '../../render/ui';
+import { dockArgs, splitDock } from '../../data/round7';
 import { drawPlayerPaddle } from '../people/actors';
 import { drawExpression, settlementExpression } from '../people/expressions';
 import { judgeLine } from '../../data/lines';
@@ -33,8 +34,9 @@ export function settlement(scene, ctx) {
   drawPlayerPaddle(ctx, 156, quoteY + 28, 52, 78, s.ornament, unlock && wristPose.phase !== 'done' ? { ...wristPose, image: scene.art && scene.art.get('watchUnlock') } : null);
   if (s.ornamentNotice) scene.text(ctx, s.ornamentNotice, 24, quoteY + 112, 12, palette.gold);
   scene.link(ctx, '查看每件物品，复盘线索', 24, scene.height - 118, 280, () => { scene.menu.view = 'ledger'; });
-  scene.button(ctx, '设备', 24, scene.height - 68, 105, 48, () => { scene.menu.view = 'shop'; }, true);
-  scene.button(ctx, '去看下一箱', 140, scene.height - 68, 211, 48, () => scene.game.prepareRound());
+  const dock = splitDock(scene.height);
+  scene.button(ctx, '设备', dock.secondary.x, dock.secondary.y, dock.secondary.w, dock.secondary.h, () => { scene.menu.view = 'shop'; }, true);
+  scene.button(ctx, '去看下一箱', dock.primary.x, dock.primary.y, dock.primary.w, dock.primary.h, () => scene.game.prepareRound());
 }
 
 export function repayment(scene, ctx) {
@@ -46,6 +48,6 @@ export function repayment(scene, ctx) {
     scene.paragraph(ctx, s.notice, 24, 280, 327, 14, 4);
   } else scene.paragraph(ctx, s.notice, 24, 205, 327, 18, 6);
   scene.text(ctx, `当前余额 ${s.coins} 金币`, 24, 412, 21, palette.gold);
-  scene.button(ctx, '继续经营', 24, scene.height - 68, 327, 48, () => scene.game.continueAfterRepayment());
+  scene.button(ctx, '继续经营', ...dockArgs(scene.height), () => scene.game.continueAfterRepayment());
 }
 

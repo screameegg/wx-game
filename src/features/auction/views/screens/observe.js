@@ -1,4 +1,5 @@
 import { steps, heading } from '../shared/chrome';
+import { dockArgs } from '../../data/round7';
 import { drawCargo } from '../../render/cargo';
 import { palette, panel } from '../../render/ui';
 import { economy } from '../../data/economy';
@@ -30,7 +31,7 @@ export function observe(scene, ctx) {
   drawToolCard(scene, ctx, '放大镜', 198, 153);
 
   // 底部按钮
-  scene.button(ctx, reviewing ? '返回竞价' : '结束观察，开始竞价', 24, scene.height - 68, 327, 48, () => {
+  scene.button(ctx, reviewing ? '返回竞价' : '结束观察，开始竞价', ...dockArgs(scene.height), () => {
     if (reviewing) scene.reviewing = false; else scene.game.beginBidding();
   });
 }

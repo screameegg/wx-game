@@ -1,6 +1,7 @@
 import { cover, palette, panel } from '../../render/ui';
 import { economy, openingBid } from '../../data/economy';
 import { paymentDue } from '../../rules/debt';
+import { dockArgs } from '../../data/round7';
 
 export function briefing(scene, ctx) {
   const s = scene.game.state; const lot = scene.game.nextLot;
@@ -19,7 +20,7 @@ export function briefing(scene, ctx) {
   scene.link(ctx, '设备与还款', 24, 519, 250, () => { scene.menu.view = 'shop'; });
   const minimum = openingBid(s.tier);
   const label = s.coins < economy.recoverBelowCoins ? `整理旧物 +${economy.recoverCoins} 金币（占1场）` : s.coins < minimum ? '资金不足，查看设备' : '打开集装箱，先看线索';
-  scene.button(ctx, label, 24, scene.height - 68, 327, 48, () => {
+  scene.button(ctx, label, ...dockArgs(scene.height), () => {
     if (s.coins < economy.recoverBelowCoins) scene.game.recover(); else if (s.coins < minimum) scene.menu.view = 'shop'; else scene.game.startRound();
   });
 }

@@ -1,4 +1,5 @@
 import { panel, palette } from '../../render/ui';
+import { dockArgs } from '../../data/round7';
 import { catalogEntries, catalogStatus } from '../../data/catalog';
 import { economy, openingBid } from '../../data/economy';
 import { paymentDue } from '../../rules/debt';
@@ -21,7 +22,7 @@ export function workshop(scene, ctx) {
   });
   scene.button(ctx, '查看还款与拍卖档位', 24, 441, 327, 46, () => { scene.menu.view = 'business'; }, true);
   scene.paragraph(ctx, s.notice || '观察时选中货物，再使用已购买设备。', 24, 516, 327, 12, 3);
-  scene.button(ctx, '返回', 24, scene.height - 68, 327, 48, () => { scene.menu.view = ''; });
+  scene.button(ctx, '返回', ...dockArgs(scene.height), () => { scene.menu.view = ''; });
 }
 
 function drawToolIcon(ctx, name, x, y) {
@@ -63,5 +64,5 @@ export function business(scene, ctx) {
   }, s.tier === 'advanced' || s.coins < advancedEntry || s.arrears > 0);
   if (s.tier === 'advanced' && s.coins < openingBid('advanced')) scene.link(ctx, '资金不足，返回入门档', 24, 463, 327, () => { s.tier = 'starter'; scene.game.save(); });
   scene.paragraph(ctx, s.notice || '还款有压力时，可以留钱、提前还款，或继续拍卖攒够资金。', 24, 489, 327, 13, 3);
-  scene.button(ctx, '返回', 24, scene.height - 68, 327, 48, () => { scene.menu.view = s.phase === 'home' ? 'home' : 'shop'; });
+  scene.button(ctx, '返回', ...dockArgs(scene.height), () => { scene.menu.view = s.phase === 'home' ? 'home' : 'shop'; });
 }

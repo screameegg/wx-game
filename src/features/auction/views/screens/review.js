@@ -1,4 +1,5 @@
 import { panel, palette } from '../../render/ui';
+import { dockArgs } from '../../data/round7';
 
 export function ledger(scene, ctx) {
   const s = scene.game.state;
@@ -9,7 +10,7 @@ export function ledger(scene, ctx) {
     scene.text(ctx, `${entry.status === 'sold' ? '已售出' : '已收藏'} · ${entry.result[2]} 金币`, 38, y + 44, 12, palette.muted);
     scene.buttons.push({ x: 24, y, w: 327, h: 55, label: `复盘${i + 1}`, action: () => { scene.menu.reviewIndex = i; scene.menu.view = 'review'; } });
   });
-  scene.button(ctx, '返回结算', 24, scene.height - 68, 327, 48, () => { scene.menu.view = ''; });
+  scene.button(ctx, '返回结算', ...dockArgs(scene.height), () => { scene.menu.view = ''; });
 }
 export function review(scene, ctx) {
   const i = scene.menu.reviewIndex || 0; const entry = scene.game.state.items[i];
@@ -18,5 +19,5 @@ export function review(scene, ctx) {
   scene.paragraph(ctx, entry.isBonus ? '夹层藏在货柜深处，拍卖前无法看到。' : scene.game.clue(i), 24, 217, 327, 16, 4);
   scene.text(ctx, '打开之后', 24, 344, 17, palette.gold);
   scene.paragraph(ctx, `${entry.result[0]} · ${entry.result[2]} 金币。${entry.result[1]}`, 24, 378, 327, 16, 4);
-  scene.button(ctx, '返回物品明细', 24, scene.height - 68, 327, 48, () => { scene.menu.view = 'ledger'; });
+  scene.button(ctx, '返回物品明细', ...dockArgs(scene.height), () => { scene.menu.view = 'ledger'; });
 }

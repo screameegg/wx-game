@@ -1,4 +1,5 @@
 import { palette } from '../../render/ui';
+import { dockArgs } from '../../data/round7';
 
 export function options(scene, ctx) {
   const s = scene.game.state;
@@ -30,5 +31,5 @@ export function ceiling(scene, ctx) {
     scene.button(ctx, `${value} 金币`, 24, 263 + i * 58, 327, 44, () => { s.ceiling = value; s.warnedPrice = 0; scene.game.save(); scene.menu.view = ''; }, s.ceiling !== value);
   });
   scene.link(ctx, '不设提醒', 24, 451, 327, () => { s.ceiling = 0; scene.game.save(); scene.menu.view = ''; });
-  scene.button(ctx, '回到游戏', 24, scene.height - 68, 327, 48, () => { scene.menu.view = ''; });
+  scene.button(ctx, '回到游戏', ...dockArgs(scene.height), () => { scene.menu.view = ''; });
 }

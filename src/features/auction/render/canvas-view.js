@@ -1,4 +1,5 @@
-import { panel, palette } from './ui';
+import { palette } from './ui';
+import { drawPrimaryCta, drawSecondaryCta } from '../fx/round7-chrome';
 
 // 只处理 Canvas 基础绘制、屏幕适配和触摸，不了解拍卖规则。
 export default class CanvasView {
@@ -26,16 +27,15 @@ export default class CanvasView {
   button(ctx, label, x, y, w, h, action, muted = false, extra) {
     const opt = extra || {};
     const disabled = !!opt.disabled;
-    const role = opt.role || '';
-    const confirm = opt.confirm || 'press';
+    const primary = !muted;
+    const role = opt.role || (primary ? `cta:${x}:${y}:${label}` : '');
+    // 主按钮按下只变样子，松手才执行。禁用键吃掉点击。
+    const confirm = opt.confirm || (primary ? 'release' : 'press');
     const pressed = !!(role && this.pointer && this.pointer.down && !this.pointer.swallowed && this.pointer.role === role);
-    if (typeof opt.paint === 'function') opt.paint(ctx, { x, y, w, h, label, disabled, pressed, muted });
-    else {
-      panel(ctx, x, y, w, h, muted ? '#54736b' : palette.gold, 12);
-      ctx.textAlign = 'center'; ctx.font = `600 ${h < 40 ? 13 : 16}px sans-serif`; ctx.fillStyle = '#fffaf0';
-      ctx.fillText(label, x + w / 2, y + h / 2 + 6);
-      ctx.textAlign = 'left';
-    }
+    const box = { x, y, w, h, label, disabled, pressed, muted };
+    if (typeof opt.paint === 'function') opt.paint(ctx, box);
+    else if (primary) drawPrimaryCta(ctx, box);
+    else drawSecondaryCta(ctx, box);
     this.buttons.push({ x, y, w, h, action, label, role, disabled, confirm });
   }
   link(ctx, label, x, y, w, action) {
