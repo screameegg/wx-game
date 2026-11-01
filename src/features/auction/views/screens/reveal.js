@@ -49,10 +49,11 @@ function drawRevealCargo(scene, ctx, s) {
 
     // 未处理：显示当前状态（已揭晓用真实图，hidden 用轮廓/不可见）
     const alreadyRevealed = entry.status === 'revealed';
-    if (entry.visibility === 0 && !alreadyRevealed) {
+    if (entry.visibility === 0 && !alreadyRevealed && !cargoSprite(scene, ctx, index, box, false)) {
       ctx.fillStyle = '#101b1bc9'; ctx.fillRect(box.x + 10, box.y + 15, box.w - 20, box.h - 20);
-    } else {
-      if (entry.visibility === 1 && !alreadyRevealed) ctx.filter = 'brightness(0.58)';
+    } else if (entry.visibility !== 0 || alreadyRevealed) {
+      const ownArt = scene.game.lot && scene.game.lot.items[index] && scene.game.lot.items[index].artId;
+      if (entry.visibility === 1 && !alreadyRevealed && !ownArt) ctx.filter = 'brightness(0.58)';
       cargoSprite(scene, ctx, index, box, alreadyRevealed);
       ctx.filter = 'none';
     }
@@ -149,8 +150,10 @@ function drawRevealBack(scene, ctx, item, index, box) {
     return;
   }
   const entry = scene.game.state.items[index];
-  if (!entry || entry.visibility === 0) return;
-  if (entry.visibility === 1) ctx.filter = 'brightness(0.58)';
+  if (!entry) return;
+  if (entry.visibility === 0) { cargoSprite(scene, ctx, index, box, false); return; }
+  const ownArt = scene.game.lot && scene.game.lot.items[index] && scene.game.lot.items[index].artId;
+  if (entry.visibility === 1 && !ownArt) ctx.filter = 'brightness(0.58)';
   cargoSprite(scene, ctx, index, box, false);
   ctx.filter = 'none';
   if (entry.coverCloth) {

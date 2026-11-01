@@ -1,3 +1,5 @@
+import { bandPieceKey, bandUsesSilhouette } from '../data/round1-art';
+
 // 图集坐标与图片比例仅由这个模块管理，业务层不接触像素裁切。
 export function sprite(ctx, image, index, columns, rows, x, y, w, h) {
   if (!image) return;
@@ -98,14 +100,25 @@ function drawBonusIllustration(ctx, name, box) {
   }
   ctx.restore(); return true;
 }
+function drawFitted(ctx, image, box) {
+  const scale = Math.min(box.w / image.width, box.h / image.height);
+  const w = image.width * scale; const h = image.height * scale;
+  ctx.drawImage(image, box.x + (box.w - w) / 2, box.y + (box.h - h) / 2, w, h);
+}
 export function cargoSprite(scene, ctx, index, box, revealed = false) {
   const entry = scene.game.state.items[index];
+  if (!entry) return false;
+  const lotItem = scene.game.lot && scene.game.lot.items[index];
+  const piece = lotItem && lotItem.artId && scene.art.get(bandPieceKey(lotItem.artId, bandUsesSilhouette(entry, revealed)));
+  if (piece) { drawFitted(ctx, piece, box); return true; }
+  if (!revealed && entry.visibility === 0 && lotItem && lotItem.artId) return false;
   const image = scene.art.get(revealed ? 'resultSheet' : 'itemSheet');
-  if (!image || !entry) return;
+  if (!image) return false;
   const name = entry.result && entry.result[0] || '';
   const theme = scene.game.lot && scene.game.lot.theme;
   const extra = revealed ? extraCell(name) : theme === 'photo' ? [0, 2, 3, -1, 5][index] : theme === 'repair' ? [6, 7, 8, 9, 10][index] : -1;
-  if (extra >= 0) { drawExtra(ctx, scene.art.get('extraSheet'), extra, box); return; }
+  if (extra >= 0) { drawExtra(ctx, scene.art.get('extraSheet'), extra, box); return true; }
   const cell = !revealed ? [0, 1, 15, 3, 4][index] : resultCell(name);
   bandCell(ctx, image, cell, box);
+  return true;
 }

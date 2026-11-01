@@ -1,9 +1,21 @@
-// 第一轮参考图的仓库路径。单件切图还没到，运行时仍用现有图集，不要凭空补 PNG。
+// 第一轮参考图和乐队箱单件图。轮廓用于看不清，正面用于看清和揭晓。
 export const round1Art = {
   topbarCta: 'assets/art/ui/topbar-cta-spec.jpg',
   styleboard: 'assets/art/style/styleboard-v2.jpg',
   bandSheet: 'assets/art/items/band/batch1-sheet.jpg',
 };
 
-// 乐队箱五个位置，顺序与 batch1 整张参考图一致。轮廓和正面都还在这张图上。
 export const bandItemIds = ['bike_01', 'case_guitar_01', 'box_scores_01', 'crate_cloth_01', 'speaker_01'];
+
+export function bandPiecePath(id, silhouette) {
+  return `assets/art/items/band/${id}${silhouette ? '_silhouette' : ''}.png`;
+}
+
+export function bandPieceKey(id, silhouette) {
+  return `${id}:${silhouette ? 'silhouette' : 'normal'}`;
+}
+
+// 可见度 0/1 用剪影；看得清或已经揭晓用正面。
+export function bandUsesSilhouette(entry, revealed) {
+  return !revealed && (!entry || entry.visibility < 2);
+}

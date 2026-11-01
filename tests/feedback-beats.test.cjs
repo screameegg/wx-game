@@ -317,7 +317,8 @@ function withRandom(seed, run) {
 
 test('expressions and fx do not change the bid sequence', async () => {
   const fs = require('fs');
-  const { round1Art, bandItemIds } = await import('../src/features/auction/data/round1-art.js');
+  const { round1Art, bandItemIds, bandPiecePath, bandUsesSilhouette } = await import('../src/features/auction/data/round1-art.js');
+  const { lots } = await import('../src/features/auction/data/lots.js');
   const { auctionExpression } = await import('../src/features/auction/views/people/expressions.js');
   const { default: Game } = await import('../src/features/auction/game.js');
   assert.deepEqual(round1Art, {
@@ -326,7 +327,16 @@ test('expressions and fx do not change the bid sequence', async () => {
     bandSheet: 'assets/art/items/band/batch1-sheet.jpg',
   });
   assert.deepEqual(bandItemIds, ['bike_01', 'case_guitar_01', 'box_scores_01', 'crate_cloth_01', 'speaker_01']);
+  assert.deepEqual(lots.find((lot) => lot.theme === 'band').items.map((item) => item.artId), bandItemIds);
   Object.values(round1Art).forEach((path) => assert.ok(fs.statSync(path).size > 1000));
+  bandItemIds.forEach((id) => {
+    assert.ok(fs.statSync(bandPiecePath(id, false)).size > 1000);
+    assert.ok(fs.statSync(bandPiecePath(id, true)).size > 1000);
+  });
+  assert.equal(bandUsesSilhouette({ visibility: 0 }, false), true);
+  assert.equal(bandUsesSilhouette({ visibility: 1 }, false), true);
+  assert.equal(bandUsesSilhouette({ visibility: 2 }, false), false);
+  assert.equal(bandUsesSilhouette({ visibility: 0 }, true), false);
 
   function trace(seed, fx) {
     return withRandom(seed, () => {

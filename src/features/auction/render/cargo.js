@@ -18,10 +18,11 @@ function item(scene, ctx, index) {
   ctx.save();
   if (entry.categoryKnown) drawLight(scene, ctx, index, box);
   if (entry.visibility === 0) {
-    // 完全不可见：深色暗格，暗示"深处还有东西"
-    ctx.fillStyle = '#101b1bc9'; ctx.fillRect(box.x + 10, box.y + 15, box.w - 20, box.h - 20);
+    // 深处：有单件剪影就用剪影，否则仍是暗格。
+    if (!cargoSprite(scene, ctx, index, box)) { ctx.fillStyle = '#101b1bc9'; ctx.fillRect(box.x + 10, box.y + 15, box.w - 20, box.h - 20); }
   } else {
-    if (entry.visibility === 1 && !entry.categoryKnown) ctx.filter = 'brightness(0.48)';
+    const ownArt = scene.game.lot && scene.game.lot.items[index] && scene.game.lot.items[index].artId;
+    if (entry.visibility === 1 && !entry.categoryKnown && !ownArt) ctx.filter = 'brightness(0.48)';
     cargoSprite(scene, ctx, index, box); ctx.filter = 'none';
   }
 
@@ -115,12 +116,12 @@ function drawInspection(scene, ctx, index) {
   ctx.save(); ctx.fillStyle = 'rgba(18, 30, 31, 0.66)'; ctx.fillRect(18, 168, 339, 229); ctx.restore();
   panel(ctx, x, y, w, h, '#f5edda', 15);
   panel(ctx, x + 9, y + 9, 122, 151, '#dfd0b3', 12);
-  if (entry.visibility === 0) {
+  if (entry.visibility === 0 && !cargoSprite(scene, ctx, index, { x: x + 18, y: y + 24, w: 104, h: 118 })) {
     ctx.save(); ctx.fillStyle = '#263436'; ctx.fillRect(x + 24, y + 34, 92, 93);
     ctx.strokeStyle = '#81735c'; ctx.lineWidth = 3; ctx.strokeRect(x + 24, y + 34, 92, 93);
     ctx.fillStyle = '#d9c8a7'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('深处看不清', x + 70, y + 84); ctx.restore();
-  } else {
-    ctx.save(); if (entry.visibility === 1 && !entry.categoryKnown) ctx.filter = 'brightness(0.48)';
+  } else if (entry.visibility !== 0) {
+    ctx.save(); if (entry.visibility === 1 && !entry.categoryKnown && !lotItem.artId) ctx.filter = 'brightness(0.48)';
     const target = { x: x + 18, y: y + 24, w: 104, h: 118 };
     const origin = cargoLayout[index]; const active = scene.effect && scene.effect.kind === 'inspect' && scene.effect.index === index;
     const p = active ? easeOut(effectProgress(scene, 'inspect')) : 1;
