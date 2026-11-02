@@ -275,4 +275,13 @@ test('thirty rounds: outlines do not rewrite bids or leak grade and price', asyn
   const debug = fakeCtx();
   observe(view, debug);
   assert.ok(debug.strokeRects >= 5);
+
+  game.inspect(0);
+  view.buttons = [];
+  observe(view, fakeCtx());
+  const other = cargoLayout.findIndex((_, index) => index !== game.state.selected);
+  const spot = cargoLayout[other];
+  view.pointerDown(spot.x + spot.w / 2, spot.y + spot.h / 2);
+  assert.equal(game.state.selected, -1);
+  assert.notEqual(game.state.items[other].categoryKnown, true);
 });

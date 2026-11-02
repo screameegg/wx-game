@@ -2,8 +2,11 @@ import { bandPieceKey, bandUsesSilhouette } from '../data/round1-art';
 import { isRound8Theme, lotPieceKey } from '../data/round8-art';
 
 // 图集坐标与图片比例仅由这个模块管理，业务层不接触像素裁切。
+function drawable(image) {
+  return !!(image && image.width > 0 && image.height > 0);
+}
 export function sprite(ctx, image, index, columns, rows, x, y, w, h) {
-  if (!image) return;
+  if (!drawable(image)) return;
   const cellW = image.width / columns; const cellH = image.height / rows; const padX = Math.min(3, cellW * 0.015); const padY = Math.min(3, cellH * 0.015);
   const sw = cellW - padX * 2; const sh = cellH - padY * 2; const scale = Math.min(w / sw, h / sh);
   ctx.drawImage(image, index % columns * cellW + padX, Math.floor(index / columns) * cellH + padY, sw, sh, x + (w - sw * scale) / 2, y + (h - sh * scale) / 2, sw * scale, sh * scale);
@@ -30,7 +33,7 @@ function drawExtra(ctx, image, cell, box) {
   sprite(ctx, image, cell, 4, 3, box.x, box.y, box.w, box.h);
 }
 function bandCell(ctx, image, cell, box) {
-  if (!image || cell === undefined) return;
+  if (!drawable(image) || cell === undefined) return;
   const xs = [0, 307, 612, 916, 1223], ys = [0, 307, 624, 931, 1245]; const col = cell % 4; const row = Math.floor(cell / 4);
   const sx = (xs[col] + 2) * image.width / 1223, sy = (ys[row] + 2) * image.height / 1286;
   const sw = (xs[col + 1] - xs[col] - 4) * image.width / 1223, sh = (ys[row + 1] - ys[row] - 4) * image.height / 1286;
@@ -39,6 +42,7 @@ function bandCell(ctx, image, cell, box) {
 }
 export function catalogSprite(scene, ctx, name, box) {
   if (drawBonusIllustration(ctx, name, box)) return;
+  if (!scene.art) return;
   const extra = extraCell(name);
   if (extra >= 0) { drawExtra(ctx, scene.art.get('extraSheet'), extra, box); return; }
   bandCell(ctx, scene.art.get('resultSheet'), resultCell(name), box);
@@ -102,6 +106,7 @@ function drawBonusIllustration(ctx, name, box) {
   ctx.restore(); return true;
 }
 function drawFitted(ctx, image, box) {
+  if (!drawable(image)) return;
   const scale = Math.min(box.w / image.width, box.h / image.height);
   const w = image.width * scale; const h = image.height * scale;
   ctx.drawImage(image, box.x + (box.w - w) / 2, box.y + (box.h - h) / 2, w, h);
@@ -127,8 +132,8 @@ export function cargoSprite(scene, ctx, index, box, revealed = false) {
   if (piece) { drawFitted(ctx, piece, box); return true; }
   // 乐队深处只认单件剪影。摄影和维修文件未到时，落到下面的原图集或文字。
   if (!revealed && entry.visibility === 0 && theme === 'band' && lotItem && lotItem.artId) return false;
-  const image = scene.art.get(revealed ? 'resultSheet' : 'itemSheet');
-  if (!image) return false;
+  const image = scene.art && scene.art.get(revealed ? 'resultSheet' : 'itemSheet');
+  if (!drawable(image)) return false;
   const name = entry.result && entry.result[0] || '';
   const extra = revealed ? extraCell(name) : theme === 'photo' ? [0, 2, 3, -1, 5][index] : theme === 'repair' ? [6, 7, 8, 9, 10][index] : -1;
   if (extra >= 0) { drawExtra(ctx, scene.art.get('extraSheet'), extra, box); return true; }

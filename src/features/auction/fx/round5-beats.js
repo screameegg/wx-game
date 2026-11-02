@@ -176,7 +176,7 @@ export function drawAuctionBeat(scene, ctx, beat, x, y, w, h) {
 function drawWave(scene, ctx, beat, x, y, w, h) {
   const image = scene.art && scene.art.get && scene.art.get('passWave');
   const crop = expressionBeat.waveCrops[beat.frame] || expressionBeat.waveCrops[0];
-  if (image && crop) {
+  if (image && image.width > 0 && image.height > 0 && crop) {
     ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, x, y, w, h);
     return;
   }

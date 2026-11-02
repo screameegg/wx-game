@@ -34,7 +34,7 @@ export function drawDebtCountdown(scene, ctx, x, y, w, h) {
 function drawSparkle(scene, ctx, x, y, frame) {
   const image = scene.art && scene.art.get('debtTick');
   const crop = debtTickBeat.sparkle[frame] || debtTickBeat.sparkle[0];
-  if (image && crop) {
+  if (image && image.width > 0 && image.height > 0 && crop) {
     ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, x, y, 16, 22);
     return;
   }

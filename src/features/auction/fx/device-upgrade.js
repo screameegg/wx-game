@@ -41,7 +41,7 @@ function drawFlash(ctx, image, alpha, index) {
   const crop = deviceUpgradeBeat.crops.flash;
   ctx.save();
   ctx.globalAlpha = alpha;
-  if (image) {
+  if (image && image.width > 0 && image.height > 0) {
     ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, box.x - 16, box.y - 28, box.w + 32, box.h + 24);
   } else {
     ctx.fillStyle = '#fff1c2';
@@ -56,7 +56,7 @@ function drawOutline(ctx, image, card, alpha) {
   const crop = deviceUpgradeBeat.crops.outline;
   ctx.save();
   ctx.globalAlpha = alpha;
-  if (image) ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, card.x - 8, card.y - 8, card.w + 16, card.h + 16);
+  if (image && image.width > 0 && image.height > 0) ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, card.x - 8, card.y - 8, card.w + 16, card.h + 16);
   ctx.strokeStyle = '#f0c14a';
   ctx.lineWidth = 3;
   roundStroke(ctx, card.x - 3, card.y - 3, card.w + 6, card.h + 6, 14);
@@ -69,7 +69,7 @@ function drawArrow(ctx, image, card, alpha) {
   ctx.globalAlpha = alpha;
   const x = card.x + card.w - 54;
   const y = card.y - 18;
-  if (image) ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, x, y, 58, 58);
+  if (image && image.width > 0 && image.height > 0) ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, x, y, 58, 58);
   else {
     ctx.strokeStyle = '#6f8a4e';
     ctx.fillStyle = '#6f8a4e';

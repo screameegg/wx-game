@@ -51,7 +51,10 @@ export default class App {
     });
   }
   needsFrames() {
-    return !this.hidden && !this.scene.menu.view && ((this.game.state.phase === 'auction' && !this.scene.reviewing) || this.scene.motionActive);
+    if (this.hidden) return false;
+    // 菜单里的进阶一帧、落槌停顿也要继续走，否则会停在第一帧。
+    if (this.scene.motionActive) return true;
+    return !this.scene.menu.view && this.game.state.phase === 'auction' && !this.scene.reviewing;
   }
   syncReaction() {
     const s = this.game.state; const paused = this.hidden || !!this.scene.menu.view;
