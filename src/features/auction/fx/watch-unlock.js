@@ -39,7 +39,7 @@ export function drawWristWatch(ctx, ornament, flash) {
   ctx.globalAlpha = flash.alpha;
   const image = flash.image;
   const crop = watchUnlockBeat.crop;
-  if (image) ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, -2, 86, 46, 46);
+  if (image && image.width > 0 && image.height > 0) ctx.drawImage(image, crop.x, crop.y, crop.w, crop.h, -2, 86, 46, 46);
   ctx.fillStyle = '#fff6cf';
   spark(ctx, 34, 100, 8 + flash.t * 6);
   spark(ctx, 8, 118, 5);

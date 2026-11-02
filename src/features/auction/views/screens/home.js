@@ -12,18 +12,21 @@ export function home(scene, ctx) {
   catalogSprite(scene, ctx, '旧吉他', { x: 133, y: 181, w: 109, h: 143 });
   catalogSprite(scene, ctx, '旧唱片', { x: 244, y: 230, w: 81, h: 86 });
   ['看线索', '参加竞价', '公布结果'].forEach((label,i) => scene.text(ctx, label, 26 + i * 116, 379, 16, palette.gold));
-  scene.paragraph(ctx, '用线索判断值不值得买。卖出的金币，减去拍下的价格，就是这箱赚的钱。', 24, 422, 327, 16, 3);
-  const due = paymentDue(s); const photo = economy.themeUnlock.photo; const repair = economy.themeUnlock.repair; const entry = economy.advancedEntryCoins; const goal = !s.unlocked.includes('photo') ? `解锁摄影箱：${Math.min(s.coins, photo)} / ${photo} 金币` : !s.unlocked.includes('repair') ? `解锁维修箱：${Math.min(s.coins, repair)} / ${repair} 金币` : s.tier === 'starter' ? `进阶档：${Math.min(s.coins, entry)} / ${entry} 金币` : `本期还款：${due} 金币`;
-  panel(ctx, 24, 476, 327, 48, '#eee4d1', 11);
-  scene.text(ctx, '经营目标', 34, 496, 11, palette.muted);
-  scene.text(ctx, goal, 118, 506, 14, palette.text);
-  scene.buttons.push({ x: 24, y: 476, w: 327, h: 48, label: '经营目标与提前还款', action: () => { scene.menu.view = 'business'; } });
   const edge = layoutTokens.margin;
-  scene.button(ctx, s.phase === 'home' ? '开始第一箱' : '继续游戏', edge, scene.height - 128, layoutTokens.designWidth - edge * 2, 48, () => {
+  const linkY = scene.height - edge - 36;
+  const buttonY = linkY - edge - 48;
+  const goalY = buttonY - edge - 48;
+  scene.paragraph(ctx, '用线索判断值不值得买。卖出的金币，减去拍下的价格，就是这箱赚的钱。', edge, Math.min(400, goalY - 60), layoutTokens.designWidth - edge * 2, 16, 3);
+  const due = paymentDue(s); const photo = economy.themeUnlock.photo; const repair = economy.themeUnlock.repair; const entry = economy.advancedEntryCoins; const goal = !s.unlocked.includes('photo') ? `解锁摄影箱：${Math.min(s.coins, photo)} / ${photo} 金币` : !s.unlocked.includes('repair') ? `解锁维修箱：${Math.min(s.coins, repair)} / ${repair} 金币` : s.tier === 'starter' ? `进阶档：${Math.min(s.coins, entry)} / ${entry} 金币` : `本期还款：${due} 金币`;
+  panel(ctx, edge, goalY, layoutTokens.designWidth - edge * 2, 48, '#eee4d1', 11);
+  scene.text(ctx, '经营目标', edge + 10, goalY + 20, 11, palette.muted);
+  scene.text(ctx, goal, edge + 94, goalY + 30, 14, palette.text);
+  scene.buttons.push({ x: edge, y: goalY, w: layoutTokens.designWidth - edge * 2, h: 48, label: '经营目标与提前还款', action: () => { scene.menu.view = 'business'; } });
+  scene.button(ctx, s.phase === 'home' ? '开始第一箱' : '继续游戏', edge, buttonY, layoutTokens.designWidth - edge * 2, 48, () => {
     if (s.phase === 'home') scene.game.reset(); scene.menu.view = '';
   });
-  scene.link(ctx, '怎么玩', edge, scene.height - 52, 125, () => { scene.menu.view = 'help'; });
-  scene.link(ctx, '收藏图鉴', layoutTokens.designWidth - edge - 125, scene.height - 52, 125, () => { scene.menu.collectionTheme = ''; scene.menu.collectionPane = 'atlas'; scene.menu.view = 'collection'; });
+  scene.link(ctx, '怎么玩', edge, linkY, 125, () => { scene.menu.view = 'help'; });
+  scene.link(ctx, '收藏图鉴', layoutTokens.designWidth - edge - 125, linkY, 125, () => { scene.menu.collectionTheme = ''; scene.menu.collectionPane = 'atlas'; scene.menu.view = 'collection'; });
 }
 export function help(scene, ctx) {
   scene.text(ctx, '拍卖与经营，四步上手', 24, 125, 25);

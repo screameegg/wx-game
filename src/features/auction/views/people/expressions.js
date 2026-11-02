@@ -37,8 +37,8 @@ export function passedExpression(name, winner) {
 }
 
 export function drawExpression(scene, ctx, rivalIndex, state, x, y, w, h) {
-  const image = scene.art.get(rivalIndex ? 'lanSheet' : 'zhouSheet');
-  if (image) {
+  const image = scene.art && scene.art.get(rivalIndex ? 'lanSheet' : 'zhouSheet');
+  if (image && image.width > 0 && image.height > 0) {
     sprite(ctx, image, rivalIndex * 6 + state.frame, 6, 2, x, y, w, h);
     return;
   }

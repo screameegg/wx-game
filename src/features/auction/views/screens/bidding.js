@@ -32,10 +32,12 @@ export function bidding(scene, ctx, now = Date.now()) {
     drawLeadBadge(ctx, 24, 390);
   }
   drawPlayerPaddle(ctx, 282, 365, 64, 102, s.ornament);
-  scene.paragraph(ctx, s.pending ? '对手正在考虑……' : (s.notice || '轮到你决定。'), 24, 506, 327, 13, 2);
-  if (s.pending) progress(ctx, 24, 536, 327, Math.min(1, (Date.now() - s.pendingAt) / 1200));
-  if (!s.pending) scene.link(ctx, '回看箱内线索', 24, 558, 150, () => { scene.reviewing = true; });
   const dock = splitDock(scene.height);
+  const linkH = 36;
+  const linkY = dock.primary.y - 16 - linkH;
+  scene.paragraph(ctx, s.pending ? '对手正在考虑……' : (s.notice || '轮到你决定。'), 24, linkY - 28, 327, 13, 1);
+  if (s.pending) progress(ctx, 24, linkY + 6, 327, Math.min(1, (Date.now() - s.pendingAt) / 1200));
+  else scene.link(ctx, '回看箱内线索', 24, linkY, 180, () => { scene.reviewing = true; });
   scene.button(ctx, '放弃', dock.secondary.x, dock.secondary.y, dock.secondary.w, dock.secondary.h, () => scene.game.pass(), true);
   const next = s.leader === '拍卖员' ? s.price : s.price + s.bidStep;
   const disabled = s.pending || next > s.coins;

@@ -214,6 +214,23 @@ test('round 7 tokens, debt copy, and CTA states stay off the ledger', async () =
   bidding(held.board, heldCtx);
   assert.ok(heldCtx.fills.includes('#C17A2A'));
   assert.equal(held.played.state.pending, false);
+
+  const desk = new Game();
+  desk.state.phase = 'home';
+  const homeView = new CanvasView({ width: 375, height: 640, top: 0, bottom: 0, context: fakeCtx() });
+  homeView.game = desk;
+  homeView.art = { get() { return null; } };
+  homeView.menu = { view: 'home' };
+  const { home } = await import('../src/features/auction/views/screens/home.js');
+  home(homeView, fakeCtx());
+  const goal = homeView.buttons.find((button) => button.label === '经营目标与提前还款');
+  const start = homeView.buttons.find((button) => button.label === '开始第一箱');
+  assert.ok(goal.y + goal.h + 16 <= start.y);
+  assert.ok(start.y + start.h + 16 <= homeView.buttons.find((button) => button.label === '怎么玩').y);
+  assert.equal(homeView.pointerDown(goal.x + 20, goal.y + goal.h - 4), true);
+  assert.equal(homeView.menu.view, 'business');
+  assert.equal(desk.state.phase, 'home');
+  assert.equal(desk.state.coins, 600);
 });
 
 test('same seed, with or without the chrome, gold due remaining and results match', async () => {

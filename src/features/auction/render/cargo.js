@@ -1,7 +1,7 @@
 import { cover, panel, palette } from './ui';
 import { cargoSprite, dedicatedPiece } from './sprites';
 import { effectProgress, easeOut } from './motion';
-import { tierVisual } from '../data/observe-tiers';
+import { hotspotRules, tierVisual } from '../data/observe-tiers';
 import { hotspotOrder, resolveHotspots } from './hotspots';
 import { drawHotspotDebug, strokeTierBox } from './tier-stroke';
 
@@ -27,8 +27,8 @@ function item(scene, ctx, index) {
   if ((entry.visibility || 0) <= 0) drew = !!cargoSprite(scene, ctx, index, box);
   else {
     const ownArt = !!dedicatedPiece(scene, index);
-    if (entry.visibility === 1 && !entry.categoryKnown && !ownArt) ctx.filter = 'brightness(0.48)';
-    drew = !!cargoSprite(scene, ctx, index, box); ctx.filter = 'none';
+    if (entry.visibility === 1 && !entry.categoryKnown && !ownArt) setFilter(ctx, 'brightness(0.48)');
+    drew = !!cargoSprite(scene, ctx, index, box); setFilter(ctx, 'none');
   }
   ctx.restore();
   if ((entry.visibility || 0) <= 0) {
@@ -49,7 +49,6 @@ function item(scene, ctx, index) {
   }
 
   ctx.restore();
-  if (entry.status === 'hidden') strokeTierBox(ctx, box, entry.visibility);
 
   if (entry.categoryKnown && entry.visibility === 1) {
     const lotItem = scene.game.lot.items[index];
@@ -76,10 +75,11 @@ function drawLight(scene, ctx, index, box) {
     const glow = ctx.createRadialGradient(cx, cy, 2, cx, cy, radius);
     glow.addColorStop(0, `rgba(255, 224, 154, ${alpha})`); glow.addColorStop(1, 'rgba(255, 224, 154, 0)'); ctx.fillStyle = glow;
   } else ctx.fillStyle = `rgba(255, 224, 154, ${alpha * 0.32})`;
-  ctx.beginPath(); ctx.ellipse(cx, cy, radius, radius * 0.68, 0, 0, Math.PI * 2); ctx.fill();
+  fillOval(ctx, cx, cy, radius, radius * 0.68);
   if (active) {
     ctx.save(); ctx.globalAlpha = 1 - progress; ctx.strokeStyle = '#fff0bd'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.ellipse(cx, cy, box.w * (0.55 + progress * 0.42), box.h * (0.55 + progress * 0.42), 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+    strokeOval(ctx, cx, cy, box.w * (0.55 + progress * 0.42), box.h * (0.55 + progress * 0.42));
+    ctx.restore();
   }
 }
 
@@ -87,7 +87,7 @@ function drawMagnifyPulse(scene, ctx, index, box) {
   if (!scene.effect || scene.effect.kind !== 'magnify' || scene.effect.index !== index) return;
   const t = effectProgress(scene, 'magnify'); const cx = box.x + box.w / 2; const cy = box.y + box.h / 2;
   ctx.save(); ctx.globalAlpha = 1 - t; ctx.strokeStyle = '#fff0bd'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.ellipse(cx, cy, box.w * (0.48 + t * 0.5), box.h * (0.48 + t * 0.5), 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+  strokeOval(ctx, cx, cy, box.w * (0.48 + t * 0.5), box.h * (0.48 + t * 0.5)); ctx.restore();
 }
 
 function drawLens(ctx, x, y, radius) {
@@ -119,6 +119,12 @@ export function drawCargo(scene, ctx) {
   const vis = cargoLayout.map((_, index) => (items[index] ? items[index].visibility : 0));
   const rects = resolveHotspots(cargoLayout, vis);
   scene.itemHotspots = rects;
+  // 描边跟热区走，三档互不覆盖，点到的和看到的是同一块。
+  rects.forEach((rect, index) => {
+    const entry = items[index];
+    if (!entry || entry.status !== 'hidden') return;
+    strokeTierBox(ctx, rect, entry.visibility);
+  });
   if (scene.hotspotDebug) drawHotspotDebug(ctx, rects, vis);
   hotspotOrder(vis).forEach((index) => {
     const entry = items[index];
@@ -137,6 +143,13 @@ export function drawCargo(scene, ctx) {
 function drawInspection(scene, ctx, index) {
   const entry = scene.game.state.items[index]; const lotItem = scene.game.lot.items[index];
   if (!entry || !lotItem || entry.status !== 'hidden') return;
+  scene.buttons = scene.buttons.filter((button) => !String(button.label).startsWith('货物'));
+  const stage = hotspotRules.bounds;
+  // 检视卡盖住货柜。先挡住底下的热区，避免点到别的货物。
+  scene.buttons.push({
+    x: stage.x, y: stage.y, w: stage.w, h: stage.h, label: '检视遮罩',
+    action: () => scene.game.inspect(-1),
+  });
   const x = 25; const y = 183; const w = 325; const h = 204;
   ctx.save(); ctx.fillStyle = 'rgba(18, 30, 31, 0.66)'; ctx.fillRect(18, 168, 339, 229); ctx.restore();
   panel(ctx, x, y, w, h, '#f5edda', 15);
@@ -153,7 +166,7 @@ function drawInspection(scene, ctx, index) {
     } else if (visual.wash) { ctx.fillStyle = `rgba(8, 14, 16, ${visual.wash})`; ctx.fillRect(preview.x, preview.y, preview.w, preview.h); }
     strokeTierBox(ctx, preview, entry.visibility);
   } else {
-    ctx.save(); if (entry.visibility === 1 && !entry.categoryKnown && !dedicatedPiece(scene, index)) ctx.filter = 'brightness(0.48)';
+    ctx.save(); if (entry.visibility === 1 && !entry.categoryKnown && !dedicatedPiece(scene, index)) setFilter(ctx, 'brightness(0.48)');
     const origin = cargoLayout[index]; const active = scene.effect && scene.effect.kind === 'inspect' && scene.effect.index === index;
     const p = active ? easeOut(effectProgress(scene, 'inspect')) : 1;
     const box = { x: origin.x + (preview.x - origin.x) * p, y: origin.y + (preview.y - origin.y) * p, w: origin.w + (preview.w - origin.w) * p, h: origin.h + (preview.h - origin.h) * p };
@@ -168,4 +181,27 @@ function drawInspection(scene, ctx, index) {
   if (entry.visibility === 1 && entry.conditionKnown) scene.text(ctx, '表面状态已检查', x + 145, y + 132, 11, '#55736c');
   else if (entry.visibility === 1 && entry.categoryKnown) scene.text(ctx, '可用放大镜检查表面', x + 145, y + 132, 11, '#8a6740');
   scene.button(ctx, '收回', x + 232, y + 158, 78, 34, () => scene.game.inspect(-1));
+}
+
+function setFilter(ctx, value) {
+  try { ctx.filter = value; } catch (err) { /* 没有滤镜时继续画剪影 */ }
+}
+
+function fillOval(ctx, cx, cy, rx, ry) {
+  ctx.beginPath();
+  oval(ctx, cx, cy, rx, ry);
+  ctx.fill();
+}
+
+function strokeOval(ctx, cx, cy, rx, ry) {
+  ctx.beginPath();
+  oval(ctx, cx, cy, rx, ry);
+  ctx.stroke();
+}
+
+function oval(ctx, cx, cy, rx, ry) {
+  if (ctx.ellipse) {
+    try { ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); return; } catch (err) { /* 落到圆弧 */ }
+  }
+  ctx.arc(cx, cy, Math.max(rx, ry), 0, Math.PI * 2);
 }

@@ -14,7 +14,7 @@ export function panel(ctx, x, y, w, h, color = palette.panel, radius = 12) {
 }
 export function divider(ctx, x, y, width) { ctx.fillStyle = palette.line; ctx.fillRect(x, y, width, 1); }
 export function cover(ctx, image, x, y, width, height) {
-  if (!image) return;
+  if (!image || !(image.width > 0) || !(image.height > 0)) return;
   const scale = Math.max(width / image.width, height / image.height);
   const sw = width / scale; const sh = height / scale;
   ctx.drawImage(image, (image.width - sw) / 2, (image.height - sh) / 2, sw, sh, x, y, width, height);

@@ -222,6 +222,28 @@ test('raise confirms on release, disabled does not click through, leader glow ex
   assert.equal(paint('你'), 1);
   assert.equal(paint('老周'), 1);
   assert.equal(paint('拍卖员'), 0);
+
+  const narrow = new Game();
+  narrow.state.phase = 'briefing';
+  narrow.state.coins = 5000;
+  narrow.startRound();
+  narrow.beginBidding();
+  const board = new CanvasView({ width: 375, height: 640, top: 0, bottom: 0, context: fakeCtx() });
+  board.game = narrow;
+  board.art = { get() { return null; } };
+  board.reviewing = false;
+  bidding(board, fakeCtx());
+  const link = board.buttons.find((button) => button.label === '回看箱内线索');
+  const pass = board.buttons.find((button) => button.label === '放弃');
+  const raise = board.buttons.find((button) => button.role === 'raise');
+  const textX = link.x + 20;
+  const textY = link.y + 23;
+  assert.ok(textY + 4 <= pass.y);
+  assert.ok(textY + 4 <= raise.y);
+  assert.equal(board.pointerDown(textX, textY), true);
+  assert.equal(board.reviewing, true);
+  assert.equal(narrow.state.phase, 'auction');
+  assert.equal(narrow.state.pending, false);
 });
 
 test('pre-hammer hold hides the grade and keeps the hammer price', async () => {
@@ -265,6 +287,20 @@ test('pre-hammer hold hides the grade and keeps the hammer price', async () => {
   assert.equal(ctx.texts.includes('落槌'), false);
   assert.ok(ctx.scales.includes(preHammerBeat.scale));
   assert.deepEqual(game.state.rivals.map((rival) => rival.limit), limits);
+  assert.equal(scene.buttons.some((button) => button.role === 'hammer'), true);
+  assert.equal(scene.pointerDown(180, 320), false);
+  assert.equal(game.state.items[0].status, 'hidden');
+  assert.equal(game.state.phase, 'reveal');
+  scene.effect.at = Date.now() - 10;
+  scene.render(fakeCtx());
+  assert.equal(scene.pointerDown(180, 320), false);
+  assert.equal(game.state.items[0].status, 'hidden');
+  scene.effect.at = Date.now() - 1250;
+  scene.render(fakeCtx());
+  assert.equal(scene.hammerClock(), false);
+  assert.equal(scene.buttons.some((button) => button.role === 'hammer'), false);
+  assert.equal(game.state.items[0].status, 'hidden');
+  assert.equal(game.state.coins, 480);
 });
 
 test('same seed, 30 rounds, beats on or off, bids and hammer match', async () => {
