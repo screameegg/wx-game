@@ -37,7 +37,8 @@
 - `src/features/auction/render`：Canvas 基础绘制、货柜、角色、图片裁切与动效。
 - `src/features/auction/scene.js`、`menu.js`：场景与菜单路由。
 - `src/features/auction/views`：观察、竞价、开箱、结算、设备与还款等页面。
-- `assets/resources/art`：当前运行使用的货柜、角色和物品素材。
-- `images/container_treasure_assets`：合并后的两批原始素材，`素材映射.csv` 为新映射；原始压缩包及新包解压副本保留在 `images` 下。该目录不进入小游戏发布包。
+- `assets/resources/art`：运行时唯一美术目录。图集、乐队/摄影/维修单件，以及会画进画面的特效，都从这里加载。
+- `assets/resources/art/reference`：带标题的对照板，只给路径映射和本地核对，不进入小游戏发布包。
+- `archive/sources`：原先的 `images/` 与 `assets/images/`（含压缩包）。按主题归档，不进入发布包。
 
 旧素材与生成原图保留在工作区，已通过打包忽略规则排除；当前玩法和美术仍需微信开发者工具及真机试玩调整。

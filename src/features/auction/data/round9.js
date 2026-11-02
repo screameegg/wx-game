@@ -16,7 +16,7 @@ export const round9Files = {
 };
 
 export function round9RepoPath(file) {
-  return `assets/art/falcon-art-round9/${file}`;
+  return `assets/resources/art/reference/round9/${file}`;
 }
 
 export function round9DropPath(file) {

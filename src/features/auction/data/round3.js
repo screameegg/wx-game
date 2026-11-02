@@ -1,8 +1,8 @@
 // 第三轮反馈节拍。时长、裁切、音效 id 和素材路径只放这里。
 export const round3Art = {
-  deviceUpgrade: 'assets/art/falcon-art-round3/device/device_upgrade_vfx.png',
-  debtTick: 'assets/art/falcon-art-round3/debt/debt_tick_frames.png',
-  watchUnlock: 'assets/art/falcon-art-round3/accessory/accessory_watch_unlock.png',
+  deviceUpgrade: 'assets/resources/art/fx/device/device_upgrade_vfx.png',
+  debtTick: 'assets/resources/art/fx/debt/debt_tick_frames.png',
+  watchUnlock: 'assets/resources/art/fx/accessory/accessory_watch_unlock.png',
   debtTickSfx: 'assets/audio/effects/sfx_debt_tick.wav',
 };
 

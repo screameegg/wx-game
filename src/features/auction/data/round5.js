@@ -2,10 +2,10 @@
 // 不进入出价、估值或跟价。对手跟价仍是 app 里原来的 1200ms。
 
 export const round5Art = {
-  bidButtonStates: 'assets/art/falcon-art-round5/bid_button_states.png',
-  leaderHighlight: 'assets/art/falcon-art-round5/leader_highlight.png',
-  passWave: 'assets/art/falcon-art-round5/pass_wave_frames.png',
-  gavelPause: 'assets/art/falcon-art-round5/gavel_pause_compare.png',
+  bidButtonStates: 'assets/resources/art/reference/round5/bid_button_states.png',
+  leaderHighlight: 'assets/resources/art/reference/round5/leader_highlight.png',
+  passWave: 'assets/resources/art/fx/auction/pass_wave_frames.png',
+  gavelPause: 'assets/resources/art/reference/round5/gavel_pause_compare.png',
 };
 
 // 加价按钮三态。规格板带标题和说明，不能整张贴上按钮。

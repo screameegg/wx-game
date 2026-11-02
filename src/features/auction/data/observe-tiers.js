@@ -2,8 +2,8 @@
 // 参考图是规格，不是逐件贴图。TODO: 若以后换成描边素材，只改这里的路径并在绘制层换图。
 
 export const observeArt = {
-  visibilityTiers: 'assets/art/falcon-art-round4/observe_visibility_tiers.png',
-  hotzoneRules: 'assets/art/falcon-art-round4/observe_hotzone_rules.png',
+  visibilityTiers: 'assets/resources/art/reference/round4/observe_visibility_tiers.png',
+  hotzoneRules: 'assets/resources/art/reference/round4/observe_hotzone_rules.png',
 };
 
 export const tierVisuals = {

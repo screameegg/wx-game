@@ -44,11 +44,7 @@
         "type": "folder"
       },
       {
-        "value": "assets/images/immersive-v3",
-        "type": "folder"
-      },
-      {
-        "value": "images",
+        "value": "assets/resources/art/reference",
         "type": "folder"
       },
       {
@@ -56,64 +52,12 @@
         "type": "folder"
       },
       {
+        "value": "archive",
+        "type": "folder"
+      },
+      {
         "value": "reports",
         "type": "folder"
-      },
-      {
-        "value": "assets/images/characters",
-        "type": "folder"
-      },
-      {
-        "value": "assets/images/items",
-        "type": "folder"
-      },
-      {
-        "value": "assets/images/reveal",
-        "type": "folder"
-      },
-      {
-        "value": "assets/images/scenes",
-        "type": "folder"
-      },
-      {
-        "value": "assets/images/ui",
-        "type": "folder"
-      },
-      {
-        "value": "assets/images/immersive-v3/harbor.png",
-        "type": "file"
-      },
-      {
-        "value": "assets/images/immersive-v3/zhou-expressions.png",
-        "type": "file"
-      },
-      {
-        "value": "assets/images/immersive-v3/lan-expressions.png",
-        "type": "file"
-      },
-      {
-        "value": "assets/images/immersive-v3/auction-items.png",
-        "type": "file"
-      },
-      {
-        "value": "assets/images/immersive-v3/revealed-items.png",
-        "type": "file"
-      },
-      {
-        "value": "assets/images/immersive-v3/prompts.json",
-        "type": "file"
-      },
-      {
-        "value": "assets/resources/art/cargo.jpg",
-        "type": "file"
-      },
-      {
-        "value": "assets/resources/art/rivals.jpg",
-        "type": "file"
-      },
-      {
-        "value": "assets/resources/art/photo-repair.jpg",
-        "type": "file"
       }
     ],
     "include": []

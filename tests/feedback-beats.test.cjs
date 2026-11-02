@@ -324,9 +324,9 @@ test('expressions and fx do not change the bid sequence', async () => {
   const { auctionExpression } = await import('../src/features/auction/views/people/expressions.js');
   const { default: Game } = await import('../src/features/auction/game.js');
   assert.deepEqual(round1Art, {
-    topbarCta: 'assets/art/ui/topbar-cta-spec.jpg',
-    styleboard: 'assets/art/style/styleboard-v2.jpg',
-    bandSheet: 'assets/art/items/band/batch1-sheet.jpg',
+    topbarCta: 'assets/resources/art/reference/round1/topbar-cta-spec.jpg',
+    styleboard: 'assets/resources/art/reference/round1/styleboard-v2.jpg',
+    bandSheet: 'assets/resources/art/reference/round1/batch1-sheet.jpg',
   });
   assert.deepEqual(bandItemIds, ['bike_01', 'case_guitar_01', 'box_scores_01', 'crate_cloth_01', 'speaker_01']);
   assert.deepEqual(lots.find((lot) => lot.theme === 'band').items.map((item) => item.artId), bandItemIds);

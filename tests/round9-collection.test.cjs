@@ -10,7 +10,7 @@ global.wx = {
     Object.defineProperty(image, 'src', {
       set(value) {
         image.value = value;
-        if (String(value).includes('falcon-art-round9') && typeof image.onerror === 'function') image.onerror();
+        if (String(value).includes('reference/round9') && typeof image.onerror === 'function') image.onerror();
       },
     });
     return image;
@@ -91,7 +91,7 @@ test('round 9 paths, badge, and layout stay presentational', async () => {
   assert.ok(round9.warehouseTokens.rowH >= 44);
 
   round9.round9Slots.forEach((slot) => {
-    assert.equal(slot.path, `assets/art/falcon-art-round9/${slot.file}`);
+    assert.equal(slot.path, `assets/resources/art/reference/round9/${slot.file}`);
     assert.equal(slot.drop, `/workspace/falcon-art-round9/${slot.file}`);
     assert.equal(slot.key, `round9:${Object.keys(round9.round9Files).find((key) => round9.round9Files[key] === slot.file)}`);
     assert.ok(fs.statSync(slot.path).size > 1000);

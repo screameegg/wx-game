@@ -3,9 +3,9 @@
 // 参考板带说明文字，不能整张贴进画面。
 
 export const round7Art = {
-  topbar: 'assets/art/falcon-art-round7/topbar_polish.png',
-  ctaStates: 'assets/art/falcon-art-round7/cta_primary_states.png',
-  layoutMargin: 'assets/art/falcon-art-round7/layout_margin_16.png',
+  topbar: 'assets/resources/art/reference/round7/topbar_polish.png',
+  ctaStates: 'assets/resources/art/reference/round7/cta_primary_states.png',
+  layoutMargin: 'assets/resources/art/reference/round7/layout_margin_16.png',
   useSheet: false,
 };
 

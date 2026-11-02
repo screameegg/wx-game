@@ -39,15 +39,17 @@ export default class AuctionArt {
       image.onerror = () => redraw();
       image.src = src;
     });
-    // 收藏格、珍品角标和仓库列表的参考图。缺文件就留空，画面用矢量占位。
+    // 收藏格和结算对照板在 reference/，不打进发布包，也不整张贴进画面。
+    // 缺图时格子、角标和铭牌仍按矢量画。只有以后换成可发布的切片才在这里加载。
     round9Slots.forEach((slot) => {
+      if (!slot.path || slot.path.includes('/reference/')) return;
       const image = wx.createImage();
       image.onload = () => { this.images[slot.key] = image; redraw(); };
       image.onerror = () => redraw();
       image.src = slot.path;
     });
-    // 结算、还款日、进阶和还债按钮的对照板。带示例数字，不整张贴进画面。
     round10Slots.forEach((slot) => {
+      if (!slot.path || slot.path.includes('/reference/')) return;
       const image = wx.createImage();
       image.onload = () => { this.images[slot.key] = image; redraw(); };
       image.onerror = () => redraw();

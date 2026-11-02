@@ -1,5 +1,5 @@
 // 第八轮摄影工作室与旧维修铺单件图。只登记路径，不读价格。
-// 正面和剪影都在 assets/art/lots/<theme>/。缺文件时观察和揭晓仍回退到原来的剪影或文字。
+// 正面和剪影都在 assets/resources/art/lots/<theme>/。缺文件时观察和揭晓仍回退到原来的剪影或文字。
 // 稀有闪光仍只点一处。
 
 export const round8DropRoot = '/workspace/falcon-art-round8';
@@ -31,7 +31,7 @@ function fileName(artId, silhouette) {
 
 // 正面与剪影都按这个仓库路径加载。
 export function lotPiecePath(theme, artId, silhouette) {
-  return `assets/art/lots/${theme}/${fileName(artId, silhouette)}`;
+  return `assets/resources/art/lots/${theme}/${fileName(artId, silhouette)}`;
 }
 
 // 外部落盘目录，文件名与仓库相同。画面读仓库里的文件。

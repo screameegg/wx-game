@@ -82,8 +82,8 @@ test('round 8 paths match photo and repair art ids', async () => {
   const listing = round8Listing();
   assert.equal(listing.length, 10);
   listing.forEach((row) => {
-    assert.equal(row.full, `assets/art/lots/${row.theme}/${row.artId}.png`);
-    assert.equal(row.silhouette, `assets/art/lots/${row.theme}/${row.artId}_silhouette.png`);
+    assert.equal(row.full, `assets/resources/art/lots/${row.theme}/${row.artId}.png`);
+    assert.equal(row.silhouette, `assets/resources/art/lots/${row.theme}/${row.artId}_silhouette.png`);
     assert.equal(row.dropFull, `/workspace/falcon-art-round8/${row.theme}/${row.artId}.png`);
     assert.equal(row.dropSilhouette, `/workspace/falcon-art-round8/${row.theme}/${row.artId}_silhouette.png`);
     const front = fs.statSync(row.full);
