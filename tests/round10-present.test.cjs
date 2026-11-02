@@ -10,7 +10,7 @@ global.wx = {
     Object.defineProperty(image, 'src', {
       set(value) {
         image.value = value;
-        if (String(value).includes('falcon-art-round10') && typeof image.onerror === 'function') image.onerror();
+        if (String(value).includes('reference/round10') && typeof image.onerror === 'function') image.onerror();
       },
     });
     return image;
@@ -206,7 +206,7 @@ test('round 10 skin is presentational and keeps the frozen debt', async () => {
     'settle_screen_hierarchy.png', 'repay_day_cards.png', 'advance_touch_frame.png', 'repay_button_states.png',
   ]);
   round10.round10Slots.forEach((slot) => {
-    assert.equal(slot.path, `assets/art/falcon-art-round10/${slot.file}`);
+    assert.equal(slot.path, `assets/resources/art/reference/round10/${slot.file}`);
     assert.equal(slot.drop, `/workspace/falcon-art-round10/${slot.file}`);
     assert.equal(slot.key, `round10:${Object.keys(round10.round10Files).find((key) => round10.round10Files[key] === slot.file)}`);
     assert.ok(fs.statSync(slot.path).size > 1000, slot.path);

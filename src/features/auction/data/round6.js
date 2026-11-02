@@ -2,9 +2,9 @@
 // 售价、收藏和落槌仍由 game / round 决定，这里不读也不写价格。
 
 export const round6Art = {
-  revealFlip: 'assets/art/falcon-art-round6/reveal_flip_frames.png',
-  sellCollect: 'assets/art/falcon-art-round6/sell_collect_layout.png',
-  rareSparkle: 'assets/art/falcon-art-round6/rare_sparkle_frame.png',
+  revealFlip: 'assets/resources/art/reference/round6/reveal_flip_frames.png',
+  sellCollect: 'assets/resources/art/reference/round6/sell_collect_layout.png',
+  rareSparkle: 'assets/resources/art/reference/round6/rare_sparkle_frame.png',
 };
 
 // 规格板带标题，不能整张贴进画面。useSheet 关掉，crops 留给以后的无字切片。

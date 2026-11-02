@@ -56,8 +56,8 @@ test('three observe tiers keep strokes, 44px hotspots, and doorway priority', as
   assert.ok(tierVisuals.silhouette.dash.length >= 2);
   assert.ok(tierVisuals.deep.dash.length >= 2);
   assert.ok(tierVisuals.doorway.spriteAlpha > tierVisuals.deep.spriteAlpha);
-  assert.equal(observeArt.visibilityTiers, 'assets/art/falcon-art-round4/observe_visibility_tiers.png');
-  assert.equal(observeArt.hotzoneRules, 'assets/art/falcon-art-round4/observe_hotzone_rules.png');
+  assert.equal(observeArt.visibilityTiers, 'assets/resources/art/reference/round4/observe_visibility_tiers.png');
+  assert.equal(observeArt.hotzoneRules, 'assets/resources/art/reference/round4/observe_hotzone_rules.png');
   assert.ok(fs.statSync(observeArt.visibilityTiers).size > 1000);
   assert.ok(fs.statSync(observeArt.hotzoneRules).size > 1000);
 
